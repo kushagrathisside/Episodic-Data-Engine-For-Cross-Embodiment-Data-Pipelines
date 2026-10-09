@@ -153,3 +153,35 @@ def test_empty_evaluation_is_handled(settings, catalog, view):
     )
     report = FeedbackLoop(settings=settings, catalog=catalog).detect(empty)
     assert report.failures == [] and report.reviews == []
+
+
+def test_constant_confidence_does_not_flag_every_frame(settings, catalog, view):
+    """A model with a constant confidence (no uncertainty estimate) must be
+    judged on error alone; otherwise every frame sits at its own percentile
+    and the whole split is flagged as low-confidence."""
+    import dataclasses
+
+    res = _evaluate(view)
+    flat = dataclasses.replace(
+        res, outcomes=[dataclasses.replace(o, confidence=0.5) for o in res.outcomes]
+    )
+    report = FeedbackLoop(settings=settings, catalog=catalog).detect(
+        flat, error_percentile=90.0, persist=False
+    )
+    assert report.thresholds["confidence_used"] is False
+    assert report.thresholds["confidence_threshold"] is None
+    assert all(f.mode is FailureMode.HIGH_ERROR for f in report.failures)
+    assert len(report.failures) < len(flat.outcomes)
+
+
+def test_normalized_mae_ignores_constant_dimensions():
+    """A dimension constant over the evaluated frames must not blow the metric
+    up by dividing by a near-zero spread."""
+    from rde.evaluation.evaluator import _normalized_mae
+
+    T = np.column_stack([np.linspace(-1, 1, 32), np.full(32, 0.25) + 1e-9 * np.arange(32)])
+    E = np.full_like(T, 0.1)
+    value, dims = _normalized_mae(E, T)
+    assert dims == 1
+    assert value == pytest.approx(0.1 / T[:, 0].std())
+    assert _normalized_mae(E, np.zeros_like(T)) == (None, 0)

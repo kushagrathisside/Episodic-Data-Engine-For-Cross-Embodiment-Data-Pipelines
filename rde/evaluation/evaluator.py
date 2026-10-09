@@ -11,6 +11,9 @@ Metrics are chosen to be interpretable for continuous control:
                         hides that the gripper is the failure and the arm is fine.
 ``normalized_mae``      MAE divided by the action's own standard deviation, so
                         dimensions with different ranges are comparable.
+                        Dimensions with (near-)zero spread over the evaluated
+                        frames are excluded; ``normalized_mae_dims`` counts the
+                        dimensions that were kept.
 ``success_rate``        fraction of frames within a tolerance -- a proxy, and
                         labelled as one.
 
@@ -32,6 +35,26 @@ from ..config import Settings, get_settings
 from ..engine import DatasetView, Sample
 from ..model_adapters.base import Model, ModelInputAdapter, Prediction
 
+
+
+def _normalized_mae(E: np.ndarray, T: np.ndarray) -> tuple[float | None, int]:
+    """Per-dimension MAE divided by the ground truth's spread, averaged.
+
+    Normalising by spread makes per-dimension errors comparable and stops a
+    wide-range joint from dominating the headline.  A dimension that is
+    (near-)constant over the evaluated frames -- a gripper held shut across a
+    short validation batch -- has no spread to normalise by, and dividing by it
+    inflates the metric by orders of magnitude.  Such dimensions are excluded,
+    judged relative to the median spread so the rule is independent of units.
+    Returns the metric (``None`` if no dimension qualifies) and the number of
+    dimensions kept.
+    """
+    spread = T.std(axis=0)
+    informative = spread > max(1e-8, 1e-3 * float(np.median(spread)))
+    if not informative.any():
+        return None, 0
+    dim_mae = np.abs(E).mean(axis=0)
+    return float((dim_mae[informative] / spread[informative]).mean()), int(informative.sum())
 
 
 def _safe_corr(a: np.ndarray, b: np.ndarray) -> float | None:
@@ -202,17 +225,15 @@ class Evaluator:
         E = np.vstack(errors)
         T = np.vstack(truths)
         C = np.concatenate(confidences)
-        # Normalising by the ground truth's own spread makes per-dimension errors
-        # comparable and stops a wide-range joint from dominating the headline.
-        spread = T.std(axis=0)
-        spread = np.where(spread > 1e-8, spread, 1.0)
+        normalized_mae, normalized_dims = _normalized_mae(E, T)
 
         metrics: dict[str, Any] = {
             "mse": float((E ** 2).mean()),
             "mae": float(np.abs(E).mean()),
             "rmse": float(np.sqrt((E ** 2).mean())),
             "per_dimension_mae": np.abs(E).mean(axis=0).round(5).tolist(),
-            "normalized_mae": float((np.abs(E).mean(axis=0) / spread).mean()),
+            "normalized_mae": normalized_mae,
+            "normalized_mae_dims": normalized_dims,
             "success_rate": float((np.abs(E).mean(axis=1) < success_tolerance).mean()),
             "success_tolerance": success_tolerance,
             "mean_confidence": float(C.mean()),

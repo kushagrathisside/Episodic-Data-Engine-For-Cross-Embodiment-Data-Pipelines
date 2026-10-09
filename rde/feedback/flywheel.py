@@ -144,6 +144,13 @@ class FeedbackLoop:
         number: what counts as a large error depends on the action units, the
         normalisation, and the model.  A fixed threshold would either flag
         everything or nothing the moment either changes.
+
+        Confidence is used only when it carries information.  A model that
+        reports a constant (``SmolVLAPolicy`` and ``MeanActionPolicy`` do) would
+        otherwise put every frame at or below its own percentile and flag the
+        whole split as low-confidence.  In that case detection falls back to
+        error alone and ``thresholds["confidence_used"]`` records why, unless
+        the caller passes an explicit ``confidence_threshold``.
         """
         if not result.outcomes:
             return FeedbackReport(
@@ -155,16 +162,17 @@ class FeedbackLoop:
         errors = np.array([o.error for o in result.outcomes])
         confs = np.array([o.confidence for o in result.outcomes])
         err_thr = float(np.percentile(errors, error_percentile))
-        conf_thr = (
-            confidence_threshold
-            if confidence_threshold is not None
-            else float(np.percentile(confs, 100 - error_percentile))
-        )
+        if confidence_threshold is not None:
+            conf_thr: float | None = float(confidence_threshold)
+        elif float(np.ptp(confs)) > 0.0:
+            conf_thr = float(np.percentile(confs, 100 - error_percentile))
+        else:
+            conf_thr = None  # constant confidence: uninformative, ignore it
 
         failures: list[FailureRecord] = []
         for o in result.outcomes:
             high_err = o.error >= err_thr
-            low_conf = o.confidence <= conf_thr
+            low_conf = conf_thr is not None and o.confidence <= conf_thr
             if not (high_err or low_conf):
                 continue
             mode = (
@@ -188,7 +196,8 @@ class FeedbackLoop:
             thresholds={
                 "error_percentile": error_percentile,
                 "error_threshold": round(err_thr, 6),
-                "confidence_threshold": round(conf_thr, 6),
+                "confidence_threshold": round(conf_thr, 6) if conf_thr is not None else None,
+                "confidence_used": conf_thr is not None,
                 "min_failures_per_episode": min_failures_per_episode,
             },
         )

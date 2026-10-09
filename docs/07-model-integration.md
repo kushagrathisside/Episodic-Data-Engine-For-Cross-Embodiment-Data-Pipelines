@@ -105,7 +105,7 @@ The field `Prediction.confidence` is mandatory because the feedback loop selects
 
 The k-nearest-neighbor model derives its confidence from retrieval distance, calibrated against the distribution of distances observed at fit time. Measured on the test split, the correlation between confidence and error is −0.79: when the model is confident, it tends to be correct, and when it is uncertain, it tends to be wrong. This correlation is what makes the flywheel's low-confidence signal meaningful rather than decorative.
 
-`SmolVLAPolicy` exposes no calibrated uncertainty estimate. It therefore returns a constant confidence value and states this explicitly in `metadata.confidence_note`, rather than inventing a number that the feedback loop would otherwise treat as trustworthy.
+`SmolVLAPolicy` exposes no calibrated uncertainty estimate. It therefore returns a constant confidence value and states this explicitly in `metadata.confidence_note`, rather than inventing a number that the feedback loop would otherwise treat as trustworthy. `FeedbackLoop.detect` in turn ignores a confidence that never varies and judges such a model on prediction error alone, recording `confidence_used: false` in its thresholds.
 
 ## 8. SmolVLA
 
