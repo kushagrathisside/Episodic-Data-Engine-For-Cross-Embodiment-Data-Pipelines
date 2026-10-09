@@ -1,0 +1,20 @@
+{
+  "dataset_id": "aloha_coffee",
+  "source_repo": "lerobot/aloha_static_coffee",
+  "source_format": "lerobot",
+  "raw_version": "raw/v1",
+  "clean_version": "clean/v1",
+  "training_version": "training/v1",
+  "normalize": ["state.joint", "action.joint", "force.effort"],
+  "normalize_scheme": "mean_std",
+  "image_size": [224, 224],
+  "keep_quality": ["passed"],
+  "splits": {"train": 0.8, "val": 0.1, "test": 0.1},
+  "split_seed": 42,
+  "split_mode": "quantile",
+  "model": "nearest_neighbor",
+  "baseline_model": "mean_action",
+  "eval_split": "test",
+  "eval_max_frames": 2000,
+  "deep_video_check": false
+}
