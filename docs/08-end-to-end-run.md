@@ -133,7 +133,7 @@ failure frames 279     {high_error: 88, low_confidence: 88, both: 103}
 episodes flagged 5
 
   ep   fail/total   mean err  mean conf  priority  recommendation
-  27       94/326    0.11852     0.3686    0.3225  collect more demonstrations
+  27       94/326    0.11854     0.3686    0.3225  collect more demonstrations
   14       87/375    0.11456     0.2887    0.2586  collect more demonstrations
   29       49/374    0.09820     0.3343    0.1439  collect more demonstrations
   42       32/417    0.07205     0.4824    0.0823  collect more demonstrations
