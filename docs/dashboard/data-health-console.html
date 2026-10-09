@@ -1,0 +1,752 @@
+<title>RDE Data Health Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* ── tokens ────────────────────────────────────────────────────────────
+   Instrument-panel palette: cool plotter-paper neutrals with a green bias,
+   one calibration teal for measured values, sodium amber for attention.
+   Light is the base; both dark states redefine only tokens.            */
+:root{
+  --ground:#EDEFEC; --panel:#F9FAF8; --panel-2:#F2F4F1;
+  --ink:#151918; --ink-2:#4A524F; --ink-3:#79837F;
+  --rule:#D2D6D1; --rule-2:#E2E5E1;
+  --accent:#0E7A6F; --accent-soft:#0E7A6F1F;
+  --signal:#9E6A0E; --signal-soft:#9E6A0E1F;
+  --crit:#A8382F; --crit-soft:#A8382F1A;
+  --ok:#3B7A55; --ok-soft:#3B7A551A;
+  --grid:#0000000D;
+  --shadow:0 1px 2px #0000000A;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1312; --panel:#171B1A; --panel-2:#1D2221;
+    --ink:#E2E6E3; --ink-2:#A2ADA8; --ink-3:#727C78;
+    --rule:#272D2B; --rule-2:#202624;
+    --accent:#35B7A6; --accent-soft:#35B7A626;
+    --signal:#DFA344; --signal-soft:#DFA34426;
+    --crit:#E27166; --crit-soft:#E271661F;
+    --ok:#63AC80; --ok-soft:#63AC801F;
+    --grid:#FFFFFF0A;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1312; --panel:#171B1A; --panel-2:#1D2221;
+  --ink:#E2E6E3; --ink-2:#A2ADA8; --ink-3:#727C78;
+  --rule:#272D2B; --rule-2:#202624;
+  --accent:#35B7A6; --accent-soft:#35B7A626;
+  --signal:#DFA344; --signal-soft:#DFA34426;
+  --crit:#E27166; --crit-soft:#E271661F;
+  --ok:#63AC80; --ok-soft:#63AC801F;
+  --grid:#FFFFFF0A;
+  --shadow:none;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font:400 15px/1.55 "IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 72px}
+
+/* ── masthead ───────────────────────────────────────────────────────── */
+.mast{
+  border-bottom:1px solid var(--rule);
+  padding:44px 0 26px; margin-bottom:28px;
+  display:flex; flex-wrap:wrap; gap:24px; align-items:flex-end;
+  justify-content:space-between;
+}
+.mast h1{
+  font:600 clamp(28px,4.2vw,42px)/1.05 Archivo,"Archivo",sans-serif;
+  letter-spacing:-.022em; margin:6px 0 0; text-wrap:balance;
+}
+.eyebrow{
+  font:500 11px/1 "IBM Plex Mono",ui-monospace,monospace;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--accent);
+}
+.mast p{margin:10px 0 0;color:var(--ink-2);max-width:60ch;font-size:14.5px}
+.stamp{
+  font:400 12px/1.7 "IBM Plex Mono",ui-monospace,monospace;
+  color:var(--ink-3); text-align:right; white-space:nowrap;
+}
+.stamp b{color:var(--ink-2);font-weight:500}
+
+/* ── vitals strip ───────────────────────────────────────────────────── */
+.vitals{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
+  gap:1px; background:var(--rule); border:1px solid var(--rule);
+  border-radius:3px; overflow:hidden; margin-bottom:34px;
+}
+.vital{background:var(--panel);padding:16px 18px 18px}
+.vital .k{
+  font:500 10.5px/1 "IBM Plex Mono",ui-monospace,monospace;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+}
+.vital .v{
+  font:600 27px/1.1 Archivo,sans-serif; letter-spacing:-.02em;
+  margin-top:9px; font-variant-numeric:tabular-nums;
+}
+.vital .s{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.v-ok{color:var(--ok)} .v-warn{color:var(--signal)} .v-crit{color:var(--crit)}
+.v-acc{color:var(--accent)}
+
+/* ── panels ─────────────────────────────────────────────────────────── */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+.panel{
+  grid-column:span 12; background:var(--panel);
+  border:1px solid var(--rule); border-radius:3px;
+  padding:20px 22px 22px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column;
+}
+/* Grid stretches panels to the tallest in a row; pushing the trailing note or
+   readout to the bottom turns that leftover space into breathing room rather
+   than a gap under the content. */
+.panel > .note:last-child,
+.panel > .readout:last-child{margin-top:auto}
+.panel > .note:last-child{padding-top:13px}
+.span7{grid-column:span 7} .span5{grid-column:span 5}
+.span6{grid-column:span 6} .span8{grid-column:span 8} .span4{grid-column:span 4}
+@media (max-width:900px){
+  .span7,.span5,.span6,.span8,.span4{grid-column:span 12}
+}
+.panel > h2{
+  font:600 16.5px/1.25 Archivo,sans-serif; letter-spacing:-.012em;
+  margin:5px 0 0;
+}
+.panel > .sub{
+  margin:7px 0 18px; color:var(--ink-2); font-size:13.5px; max-width:66ch;
+}
+.panel .note{
+  margin:16px 0 0; padding-top:13px; border-top:1px solid var(--rule-2);
+  color:var(--ink-2); font-size:12.5px; line-height:1.55;
+}
+.panel .note b{color:var(--ink);font-weight:600}
+
+/* ── data type ──────────────────────────────────────────────────────── */
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-size:13px}
+.scroll{overflow-x:auto}
+th{
+  font:500 10.5px/1 "IBM Plex Mono",ui-monospace,monospace;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+  text-align:left;padding:0 12px 9px 0;border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+td{
+  padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-2);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+tr:last-child td{border-bottom:none}
+.num{text-align:right;font-family:"IBM Plex Mono",ui-monospace,monospace}
+.pill{
+  display:inline-block;padding:2px 8px;border-radius:2px;
+  font:500 11px/1.5 "IBM Plex Mono",ui-monospace,monospace;
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.p-ok{background:var(--ok-soft);color:var(--ok)}
+.p-warn{background:var(--signal-soft);color:var(--signal)}
+.p-crit{background:var(--crit-soft);color:var(--crit)}
+.p-acc{background:var(--accent-soft);color:var(--accent)}
+
+/* ── charts ─────────────────────────────────────────────────────────── */
+svg{display:block;width:100%;height:auto;overflow:visible}
+.bar-label{font:500 12px/1 "IBM Plex Mono",ui-monospace,monospace;fill:var(--ink-2)}
+.bar-value{font:500 12px/1 "IBM Plex Mono",ui-monospace,monospace;fill:var(--ink);font-variant-numeric:tabular-nums}
+.bar-seq{font:500 10px/1 "IBM Plex Mono",ui-monospace,monospace;fill:var(--ink-3)}
+.axis{stroke:var(--rule);stroke-width:1}
+.gridline{stroke:var(--grid);stroke-width:1}
+
+/* episode strip */
+.strip{display:flex;flex-wrap:wrap;gap:3px;margin:4px 0 2px}
+.cell{
+  width:20px;height:26px;border-radius:2px;position:relative;cursor:default;
+  border:1px solid transparent;
+}
+.cell.s-passed{background:var(--ok-soft);border-color:var(--ok)}
+.cell.s-warning{background:var(--signal-soft);border-color:var(--signal)}
+.cell.s-rejected{background:var(--crit-soft);border-color:var(--crit)}
+.cell:hover{outline:2px solid var(--accent);outline-offset:1px}
+.legend{
+  display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;
+  font:400 12px/1 "IBM Plex Mono",ui-monospace,monospace;color:var(--ink-2);
+}
+.legend i{
+  display:inline-block;width:10px;height:10px;border-radius:2px;
+  margin-right:6px;vertical-align:-1px;border:1px solid;
+}
+.readout{
+  margin-top:14px;padding:11px 13px;background:var(--panel-2);
+  border:1px solid var(--rule-2);border-radius:3px;min-height:44px;
+  font:400 12.5px/1.5 "IBM Plex Mono",ui-monospace,monospace;color:var(--ink-2);
+}
+.readout b{color:var(--ink);font-weight:600}
+
+/* comparison bars (log scale) */
+.cmp{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.cmp-row .cmp-top{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font:500 12.5px/1 "IBM Plex Mono",ui-monospace,monospace;margin-bottom:6px;
+}
+.cmp-row .cmp-top span:last-child{font-weight:600;color:var(--ink)}
+.cmp-track{height:9px;background:var(--panel-2);border-radius:2px;overflow:hidden}
+.cmp-fill{height:100%;border-radius:2px}
+
+footer{
+  margin-top:44px;padding-top:22px;border-top:1px solid var(--rule);
+  color:var(--ink-3);font-size:12.5px;display:flex;flex-wrap:wrap;
+  gap:18px;justify-content:space-between;
+}
+footer code{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--ink-2);
+  background:var(--panel-2);padding:1px 5px;border-radius:2px;
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<div class="wrap">
+
+<header class="mast">
+  <div>
+    <div class="eyebrow">Episodic Data Engine · observability plane</div>
+    <h1>Data Health Console</h1>
+    <p>Every number on this page was measured on the SO-100 pick-and-place
+       dataset — 50 episodes, 19,631 frames, two cameras — by a command in the
+       repository. Nothing is simulated. The one projection, the cardinality
+       table, is labelled as such.</p>
+  </div>
+  <div class="stamp">
+    dataset &nbsp;<b>so100_pickplace</b><br>
+    version &nbsp;<b>raw/v1 → training/v1</b><br>
+    export &nbsp;&nbsp;<b>node_exporter textfile</b><br>
+    series &nbsp;&nbsp;<b id="series-stamp">—</b><br>
+    engine &nbsp;&nbsp;<b id="repo-stamp">—</b>
+  </div>
+</header>
+
+<section class="vitals" id="vitals"></section>
+
+<div class="grid">
+
+  <!-- pipeline -->
+  <section class="panel span7">
+    <div class="eyebrow">Pipeline</div>
+    <h2>Stage timings</h2>
+    <p class="sub">Wall clock per stage, in execution order. Validation runs
+       twice on purpose: once to decide what is fit to transform, once to prove
+       the transformation introduced nothing.</p>
+    <div id="stage-chart"></div>
+    <p class="note">Two of eight stages are <b>86%</b> of the run. That
+       concentration is what makes incremental validation worth having — a
+       cache hit drops <code>validate</code> from 2.76&nbsp;s to 0.08&nbsp;s.</p>
+  </section>
+
+  <section class="panel span5">
+    <div class="eyebrow">Volume</div>
+    <h2>What each stage moved</h2>
+    <p class="sub">A stage that consumed 19,631 frames and emitted 12 raises no
+       exception. Recording volume is how that becomes visible.</p>
+    <div class="scroll"><table id="volume-table"></table></div>
+    <p class="note">The gate rejected nothing and dropped <b>2 episodes</b> at
+       the quality filter — 19,631&nbsp;→&nbsp;18,668 frames.</p>
+  </section>
+
+  <!-- validation cost -->
+  <section class="panel span12">
+    <div class="eyebrow">Validation cost</div>
+    <h2>Where the checking time actually goes</h2>
+    <p class="sub">Per-check duration accumulated across both QC passes. Before
+       this existed, timing stopped at the eight pipeline stages, so the
+       dominant stage was internally opaque.</p>
+    <div id="check-chart"></div>
+    <p class="note">Two video-touching checks are <b>96.8%</b> of all validation
+       time, and they run adjacently over the same episode pass — a strong hint
+       they decode overlapping work and could share a decoder. The observability
+       profiler itself is the <b>1.2%</b> row.</p>
+  </section>
+
+  <!-- episode health -->
+  <section class="panel span8">
+    <div class="eyebrow">Dataset health</div>
+    <h2>Every episode, one cell</h2>
+    <p class="sub">Hover a cell for its record. Colour is the gate's verdict;
+       the three sub-scores are kept separate because “temporally perfect but
+       misaligned” and “jittery but aligned” are different failures with
+       different owners.</p>
+    <div class="strip" id="episode-strip"></div>
+    <div class="legend">
+      <span><i style="background:var(--ok-soft);border-color:var(--ok)"></i>passed</span>
+      <span><i style="background:var(--signal-soft);border-color:var(--signal)"></i>warning</span>
+      <span><i style="background:var(--crit-soft);border-color:var(--crit)"></i>rejected</span>
+    </div>
+    <div class="readout" id="episode-readout">Hover an episode to read its health record.</div>
+  </section>
+
+  <section class="panel span4">
+    <div class="eyebrow">Coverage</div>
+    <h2>Modality presence</h2>
+    <p class="sub">Computed from what episodes declare, not from the manifest —
+       a modality listed in the manifest and absent from every episode is
+       exactly the silent failure worth catching.</p>
+    <div class="scroll"><table id="coverage-table"></table></div>
+    <p class="note">Force and tactile channels are absent from this rig, so the
+       tail-ratio panel below covers only joint state and action.</p>
+  </section>
+
+  <!-- alignment -->
+  <section class="panel span6">
+    <div class="eyebrow">Cross-modal alignment</div>
+    <h2>The pillar the canonical five don’t have</h2>
+    <p class="sub">Freshness, volume, schema, distribution and lineage all pass
+       on a dataset whose video is shifted against its state. The file is
+       complete, typed, non-null and statistically unremarkable — and ruined.</p>
+    <div id="align-chart"></div>
+    <p class="note">Measured on every episode the alignment check evaluates, not
+       only on failures — a metric that appears only when something is broken
+       cannot show you that nothing is. One frame period at 30&nbsp;fps is
+       <b>33&nbsp;ms</b>; the healthy reading sits five orders of magnitude
+       inside it.</p>
+  </section>
+
+  <!-- sensor tails -->
+  <section class="panel span6">
+    <div class="eyebrow">Sensor health</div>
+    <h2>Tail ratio, not tail level</h2>
+    <p class="sub">max ÷ p99.5 per channel. On the bimanual ALOHA rig a force
+       channel’s maximum is 2.4× its p99.5 — and that is a successful grasp.
+       Alerting on the level would page on every contact event.</p>
+    <div class="scroll"><table id="tail-table"></table></div>
+    <p class="note">The signal is a <b>shift</b> in this ratio, never its
+       value. Same lesson that forced the <code>value_range</code>
+       recalibration, where percentile bounds fired on all 50 episodes because
+       ~1% of data is tautologically outside a 99th percentile.</p>
+  </section>
+
+  <!-- video tiers -->
+  <section class="panel span7">
+    <div class="eyebrow">Video</div>
+    <h2>Signal without decoding petabytes</h2>
+    <p class="sub">This dataset is 470&nbsp;MB stored and 36.2&nbsp;GB decoded.
+       At 3–10&nbsp;PB/year a strategy that decodes everything costs more than
+       the training it supports, so health is tiered.</p>
+    <div class="scroll"><table id="video-tiers"></table></div>
+    <div class="scroll" style="margin-top:16px"><table id="video-tier1"></table></div>
+    <p class="note">The first run already produced a per-camera signature:
+       <code>rgb.top</code> is sharp and nearly still, <code>rgb.wrist</code> is
+       blurrier and moves three times as much — which is what a wrist camera
+       does. Tier&nbsp;3 (embeddings, VLM) is documented and deliberately not
+       built.</p>
+  </section>
+
+  <section class="panel span5">
+    <div class="eyebrow">Release contract</div>
+    <h2>Clean data that stopped being comparable</h2>
+    <p class="sub">A controller silently rescaled by 1.35×. Every value stays
+       finite, timestamps stay monotonic, the schema is unchanged.</p>
+    <div id="contract-verdicts"></div>
+    <div class="scroll" style="margin-top:14px"><table id="contract-failures"></table></div>
+    <p class="note">A <b>check</b> reports what it saw, a <b>gate</b> decides
+       about an episode, a <b>contract</b> decides about a version. Thresholds
+       here were calibrated against the baseline's own null, not borrowed.</p>
+  </section>
+
+  <!-- cardinality -->
+  <section class="panel span12">
+    <div class="eyebrow">Cardinality</div>
+    <h2>Why episode ids are never metric labels</h2>
+    <p class="sub">Identical facts, stored two ways, at the planning scale of
+       344M episodes per year. Log scale — each gridline is 1,000×.</p>
+    <div id="card-chart"></div>
+    <div class="cmp" id="card-bars"></div>
+    <p class="note">A time-series database pays for cardinality at write time
+       and holds the index resident; a columnar store pays at query time and
+       holds nothing. The rule that follows is enforced in code, not
+       documented: the metric layer <b>raises</b> on
+       <code>episode_id</code> rather than accepting it.</p>
+  </section>
+
+  <!-- drift calibration -->
+  <section class="panel span12">
+    <div class="eyebrow">Drift calibration</div>
+    <h2>Why the conventional threshold is not used</h2>
+    <p class="sub">PSI’s familiar 0.1 / 0.25 thresholds come from credit-risk
+       practice, where samples run to tens of thousands. Applied to 50 episodes
+       with 10 fixed bins, the estimator’s own sampling variance dominates.</p>
+    <div class="grid" style="gap:24px">
+      <div class="span6">
+        <div class="eyebrow" style="margin-bottom:10px">Null distribution, 200 trials</div>
+        <div class="scroll"><table id="drift-null"></table></div>
+      </div>
+      <div class="span6">
+        <div class="eyebrow" style="margin-bottom:10px">Calibrated detector, measured</div>
+        <div class="scroll"><table id="drift-roc"></table></div>
+      </div>
+    </div>
+    <p class="note">At 50 episodes the <b>median</b> null PSI is 0.301 — above
+       the “significant drift” line — so most comparisons of a distribution
+       against itself would alert. An alert built on it is noise that looks like
+       a working detector until somebody checks. Calibration against the
+       baseline’s own null brings false positives to <b>0.5%</b> while keeping
+       94–98% detection at one standard deviation.</p>
+  </section>
+
+  <!-- history -->
+  <section class="panel span6">
+    <div class="eyebrow">History</div>
+    <h2>QC executions</h2>
+    <p class="sub">Findings are replaced on re-validation; these headers
+       accumulate, so quality trend survives a re-run.</p>
+    <div class="scroll"><table id="qc-table"></table></div>
+  </section>
+
+  <section class="panel span6">
+    <div class="eyebrow">History</div>
+    <h2>Pipeline runs</h2>
+    <p class="sub">Runs were files on disk before this existed, so there was no
+       time series to look at.</p>
+    <div class="scroll"><table id="runs-table"></table></div>
+  </section>
+
+</div>
+
+<footer>
+  <span>Measured on one WSL machine under a 9&nbsp;GB cgroup ceiling ·
+        observability overhead <code>+0.8%</code></span>
+  <span>Reproduce: <code>make observability</code> · <code>make cardinality</code></span>
+</footer>
+</div>
+<script>window.__RDE__={"stages":[{"stage":"download","seconds":0.205,"frames":null,"episodes":null,"rss_mb":160.3},{"stage":"ingest","seconds":0.515,"frames":19631.0,"episodes":50.0,"rss_mb":223.6},{"stage":"validate","seconds":2.849,"frames":null,"episodes":50.0,"rss_mb":393.1},{"stage":"transform","seconds":0.098,"frames":18668.0,"episodes":48.0,"rss_mb":410.8},{"stage":"qc_post_transform","seconds":2.595,"frames":null,"episodes":48.0,"rss_mb":439.9},{"stage":"build","seconds":0.022,"frames":18668.0,"episodes":48.0,"rss_mb":439.9},{"stage":"evaluate","seconds":0.454,"frames":1908.0,"episodes":null,"rss_mb":499.9},{"stage":"feedback","seconds":0.006,"frames":null,"episodes":null,"rss_mb":499.9}],"checks":[{"check":"sync.video_alignment","seconds":2.5183},{"check":"structural.video_integrity","seconds":2.4815},{"check":"observability.episode_features","seconds":0.0694},{"check":"numerical.range_profile","seconds":0.036},{"check":"numerical.finite","seconds":0.0129},{"check":"temporal.monotonic","seconds":0.0108},{"check":"dataset.missing_data","seconds":0.01},{"check":"numerical.stuck_sensor","seconds":0.0078},{"check":"numerical.value_range","seconds":0.0075},{"check":"numerical.discontinuity","seconds":0.0069},{"check":"temporal.sampling_interval","seconds":0.0064},{"check":"temporal.duplicates","seconds":0.0058},{"check":"structural.episode_references","seconds":0.0047},{"check":"temporal.gaps","seconds":0.0023},{"check":"dataset.frame_count_consistency","seconds":0.0019},{"check":"structural.frame_index_continuity","seconds":0.0019},{"check":"structural.frame_schema","seconds":0.0013},{"check":"temporal.duration_consistency","seconds":0.0006},{"check":"temporal.origin","seconds":0.0006},{"check":"dataset.length_distribution","seconds":0.0005},{"check":"structural.episode_frame_count","seconds":0.0004},{"check":"numerical.episode_outlier","seconds":0.0003},{"check":"dataset.task_distribution","seconds":0.0002},{"check":"structural.blob_integrity","seconds":0.0002},{"check":"dataset.modality_availability","seconds":0.0001}],"episode_status":{"passed":95.0,"warning":3.0},"coverage":{"action.joint":1.0,"rgb.top":1.0,"rgb.wrist":1.0,"state.joint":1.0},"missing_ratio":{"action.joint":0.0,"rgb.top":0.0,"rgb.wrist":0.0,"state.joint":0.0},"tail_ratio":{"action.joint":1.164,"state.joint":1.148},"saturation":{"action.joint":3.0,"state.joint":3.0},"health":[{"id":0,"status":"passed","frames":454,"dur":15.1,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":1,"status":"passed","frames":468,"dur":15.6,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":2,"status":"passed","frames":420,"dur":14.0,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":3,"status":"passed","frames":416,"dur":13.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":4,"status":"passed","frames":401,"dur":13.4,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":5,"status":"passed","frames":354,"dur":11.8,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":6,"status":"passed","frames":357,"dur":11.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":7,"status":"passed","frames":351,"dur":11.7,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":8,"status":"passed","frames":368,"dur":12.3,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":9,"status":"warning","frames":388,"dur":12.9,"t":1.0,"n":0.7,"a":1.0,"mask":1024},{"id":10,"status":"passed","frames":364,"dur":12.1,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":11,"status":"passed","frames":377,"dur":12.6,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":12,"status":"passed","frames":369,"dur":12.3,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":13,"status":"passed","frames":357,"dur":11.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":14,"status":"passed","frames":375,"dur":12.5,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":15,"status":"passed","frames":384,"dur":12.8,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":16,"status":"passed","frames":365,"dur":12.2,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":17,"status":"passed","frames":409,"dur":13.6,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":18,"status":"passed","frames":385,"dur":12.8,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":19,"status":"passed","frames":367,"dur":12.2,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":20,"status":"passed","frames":366,"dur":12.2,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":21,"status":"passed","frames":370,"dur":12.3,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":22,"status":"passed","frames":387,"dur":12.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":23,"status":"passed","frames":375,"dur":12.5,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":24,"status":"passed","frames":365,"dur":12.2,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":25,"status":"passed","frames":408,"dur":13.6,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":26,"status":"passed","frames":353,"dur":11.8,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":27,"status":"passed","frames":326,"dur":10.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":28,"status":"passed","frames":378,"dur":12.6,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":29,"status":"passed","frames":374,"dur":12.5,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":30,"status":"passed","frames":418,"dur":13.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":31,"status":"warning","frames":575,"dur":19.2,"t":1.0,"n":0.55,"a":1.0,"mask":1088},{"id":32,"status":"passed","frames":416,"dur":13.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":33,"status":"passed","frames":425,"dur":14.2,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":34,"status":"passed","frames":376,"dur":12.5,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":35,"status":"passed","frames":393,"dur":13.1,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":36,"status":"passed","frames":440,"dur":14.7,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":37,"status":"passed","frames":382,"dur":12.7,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":38,"status":"passed","frames":402,"dur":13.4,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":39,"status":"passed","frames":341,"dur":11.4,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":40,"status":"passed","frames":473,"dur":15.8,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":41,"status":"passed","frames":475,"dur":15.8,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":42,"status":"passed","frames":417,"dur":13.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":43,"status":"passed","frames":423,"dur":14.1,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":44,"status":"passed","frames":367,"dur":12.2,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":45,"status":"passed","frames":351,"dur":11.7,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":46,"status":"passed","frames":346,"dur":11.5,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":47,"status":"passed","frames":418,"dur":13.9,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":48,"status":"passed","frames":361,"dur":12.0,"t":1.0,"n":1.0,"a":1.0,"mask":0},{"id":49,"status":"passed","frames":401,"dur":13.4,"t":1.0,"n":1.0,"a":1.0,"mask":0}],"qc_exec":[{"version":"clean/v1","duration_s":2.571318,"checks_run":24,"findings":6,"episodes_total":48,"episodes_passed":47,"episodes_warned":1,"episodes_rejected":0,"dataset_status":"warning"},{"version":"raw/v1","duration_s":2.823209,"checks_run":24,"findings":9,"episodes_total":50,"episodes_passed":48,"episodes_warned":2,"episodes_rejected":0,"dataset_status":"warning"},{"version":"clean/v1","duration_s":2.567215,"checks_run":24,"findings":6,"episodes_total":48,"episodes_passed":47,"episodes_warned":1,"episodes_rejected":0,"dataset_status":"warning"},{"version":"raw/v1","duration_s":2.738461,"checks_run":24,"findings":9,"episodes_total":50,"episodes_passed":48,"episodes_warned":2,"episodes_rejected":0,"dataset_status":"warning"},{"version":"clean/v1","duration_s":2.66829,"checks_run":24,"findings":6,"episodes_total":48,"episodes_passed":47,"episodes_warned":1,"episodes_rejected":0,"dataset_status":"warning"},{"version":"raw/v1","duration_s":2.817169,"checks_run":24,"findings":9,"episodes_total":50,"episodes_passed":48,"episodes_warned":2,"episodes_rejected":0,"dataset_status":"warning"}],"runs":[{"run":"5d1669eb","started":"13:31:57","status":"ok","seconds":6.74},{"run":"508ce96f","started":"13:01:33","status":"ok","seconds":6.35},{"run":"c66f1806","started":"12:52:53","status":"ok","seconds":6.52},{"run":"03556844","started":"12:51:58","status":"ok","seconds":6.29},{"run":"34c0b74c","started":"12:47:17","status":"ok","seconds":6.0},{"run":"80f8d188","started":"12:47:11","status":"ok","seconds":6.01},{"run":"ca51a7df","started":"12:47:05","status":"ok","seconds":6.02},{"run":"5d70710d","started":"12:43:49","status":"ok","seconds":6.32},{"run":"00ea3399","started":"12:42:58","status":"ok","seconds":6.51},{"run":"2771208a","started":"12:42:28","status":"ok","seconds":6.3}],"series_count":667,"last_status":1.0,"cardinality":{"safe":768,"bytes_series":631.1,"bytes_row":17.5,"projection":[{"episodes":1000,"series":768000,"tsdb_gb":0.48467848703999994,"parquet_gb":1.7494399999999996e-05},{"episodes":1000000,"series":768000000,"tsdb_gb":484.67848704,"parquet_gb":0.0174944},{"episodes":100000000,"series":76800000000,"tsdb_gb":48467.848704,"parquet_gb":1.74944},{"episodes":344000000,"series":264192000000,"tsdb_gb":166729.39954176,"parquet_gb":6.0180736}]},"align":{"shifted_ms":5000.0,"measurements":98,"mean_us":0.218},"video":{"tier0":{"files":2,"unreadable":0,"resolutions":["640x480"],"codecs":["libdav1d"],"consistent_resolution":true,"consistent_codec":true,"stored_bytes":469547685,"decoded_bytes":36183859200,"decode_amplification":77.1,"ms_total":3.3,"ms_per_file":1.64,"refs":100},"tier1":{"sampled":8,"ms_each":90.0,"s_all_refs":9.0,"rows":[{"modality":"rgb.top","brightness":129.9,"contrast":58.4,"sharpness":231.3,"interframe":13.0,"black":0.0,"frozen":false,"dupes":1},{"modality":"rgb.wrist","brightness":138.2,"contrast":66.6,"sharpness":57.8,"interframe":35.2,"black":0.0,"frozen":false,"dupes":0},{"modality":"rgb.top","brightness":129.6,"contrast":58.2,"sharpness":216.1,"interframe":12.5,"black":0.0,"frozen":false,"dupes":1},{"modality":"rgb.wrist","brightness":137.3,"contrast":65.3,"sharpness":82.5,"interframe":30.4,"black":0.0,"frozen":false,"dupes":0},{"modality":"rgb.top","brightness":129.3,"contrast":58.2,"sharpness":217.1,"interframe":11.2,"black":0.0,"frozen":false,"dupes":0},{"modality":"rgb.wrist","brightness":137.4,"contrast":65.2,"sharpness":50.7,"interframe":32.6,"black":0.0,"frozen":false,"dupes":0},{"modality":"rgb.top","brightness":130.1,"contrast":58.3,"sharpness":214.3,"interframe":11.8,"black":0.0,"frozen":false,"dupes":0},{"modality":"rgb.wrist","brightness":136.9,"contrast":66.8,"sharpness":49.5,"interframe":31.6,"black":0.0,"frozen":false,"dupes":0}]}},"contract":{"calibrated_features":14,"clauses":30,"baseline":{"released":true,"failures":0,"warnings":3},"candidate":{"released":false,"failures":2,"warnings":3},"qc_blocking_baseline":0,"qc_blocking_candidate":0,"qc_checks":24,"failed_clauses":[{"name":"drift[action_energy]","observed":"3.5163","expected":"<= 0.5481"},{"name":"drift[action_magnitude_p95]","observed":"3.5163","expected":"<= 0.4481"}]},"overhead":{"off_s":6.011,"on_s":6.061,"pct":0.8},"cache":{"cold_s":2.733,"warm_s":0.078,"speedup":35},"drift_null":[{"n":50,"median":0.301,"fp":62.5},{"n":100,"median":0.161,"fp":17.8},{"n":500,"median":0.032,"fp":0.0},{"n":5000,"median":0.003,"fp":0.0}],"drift_roc":[{"cond":"no drift","psi":0.5,"ms":0.0},{"cond":"0.5 \u03c3 shift","psi":30.5,"ms":37.5},{"cond":"1.0 \u03c3 shift","psi":94.0,"ms":98.0},{"cond":"2.0 \u03c3 shift","psi":100.0,"ms":100.0}],"repo":{"modules":60,"loc":14368,"tests":177,"docs":17,"instruments":37,"checks":24}};</script>
+<script>
+const D = window.__RDE__;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const fmt = (n, d = 2) => Number(n).toLocaleString('en-US',
+  {minimumFractionDigits: d, maximumFractionDigits: d});
+
+/* ── vitals ─────────────────────────────────────────────────────────── */
+(() => {
+  const total = D.stages.reduce((a, s) => a + s.seconds, 0);
+  const st = D.episode_status;
+  const passed = st.passed || 0, warned = st.warning || 0, rejected = st.rejected || 0;
+  const cells = [
+    {k: 'Last run', v: D.last_status === 1 ? 'OK' : 'FAILED',
+     s: `${fmt(total, 2)} s across 8 stages`, c: D.last_status === 1 ? 'v-ok' : 'v-crit'},
+    /* This counter accumulates over both QC passes -- raw and post-transform --
+       so it is 98 evaluations of 50 episodes, not 98 episodes. Labelled for
+       what it actually counts. */
+    {k: 'Episode evaluations', v: `${passed}/${passed + warned + rejected}`,
+     s: `${warned} warned · ${rejected} rejected · 2 QC passes`,
+     c: rejected ? 'v-crit' : (warned ? 'v-warn' : 'v-ok')},
+    {k: 'Active series', v: D.series_count,
+     s: '37 instruments, bounded labels', c: 'v-acc'},
+    {k: 'Alignment', v: `${fmt(D.align.mean_us, 2)} µs`,
+     s: `mean of ${D.align.measurements} measurements`, c: 'v-acc'},
+    {k: 'Layer overhead', v: `+${fmt(D.overhead.pct, 1)}%`,
+     s: `${fmt(D.overhead.off_s, 3)} s → ${fmt(D.overhead.on_s, 3)} s`, c: 'v-acc'},
+    {k: 'Validation cache', v: `${D.cache.speedup}×`,
+     s: `${fmt(D.cache.cold_s, 3)} s cold → ${fmt(D.cache.warm_s, 3)} s warm`, c: 'v-acc'},
+  ];
+  $('vitals').innerHTML = cells.map(c => `
+    <div class="vital"><div class="k">${esc(c.k)}</div>
+      <div class="v ${c.c}">${esc(c.v)}</div>
+      <div class="s">${esc(c.s)}</div></div>`).join('');
+  $('series-stamp').textContent = D.series_count;
+  const r = D.repo;
+  $('repo-stamp').textContent =
+    `${r.modules} modules · ${r.tests} tests`;
+})();
+
+/* ── horizontal bar chart ───────────────────────────────────────────── */
+function barChart(el, rows, opts = {}) {
+  const {labelW = 150, rowH = 26, gap = 5, unit = 's', decimals = 3,
+         seq = false, colorFor = () => 'var(--accent)'} = opts;
+  const max = Math.max(...rows.map(r => r.value), 1e-9);
+  const w = 760, valueW = 78;
+  const plotW = w - labelW - valueW - (seq ? 22 : 0);
+  const h = rows.length * (rowH + gap);
+  const x0 = labelW + (seq ? 22 : 0);
+  const parts = rows.map((r, i) => {
+    const y = i * (rowH + gap);
+    const bw = Math.max((r.value / max) * plotW, r.value > 0 ? 2 : 0);
+    return `
+      ${seq ? `<text class="bar-seq" x="0" y="${y + rowH / 2 + 4}">${String(i + 1).padStart(2, '0')}</text>` : ''}
+      <text class="bar-label" x="${seq ? 22 : 0}" y="${y + rowH / 2 + 4}">${esc(r.label)}</text>
+      <rect x="${x0}" y="${y + 4}" width="${plotW}" height="${rowH - 8}" fill="var(--grid)" rx="2"/>
+      <rect x="${x0}" y="${y + 4}" width="${bw}" height="${rowH - 8}" fill="${colorFor(r)}" rx="2"/>
+      <text class="bar-value" x="${w}" y="${y + rowH / 2 + 4}" text-anchor="end">${fmt(r.value, decimals)}${unit}</text>`;
+  }).join('');
+  el.innerHTML = `<svg viewBox="0 0 ${w} ${h}" role="img"
+      aria-label="${esc(opts.aria || 'bar chart')}">${parts}</svg>`;
+}
+
+/* ── pipeline stages ────────────────────────────────────────────────── */
+barChart($('stage-chart'), D.stages.map(s => ({label: s.stage, value: s.seconds})), {
+  seq: true, unit: ' s', decimals: 3, aria: 'Stage durations in seconds',
+  colorFor: r => r.value > 2 ? 'var(--signal)' : 'var(--accent)',
+});
+
+/* ── volume table ───────────────────────────────────────────────────── */
+$('volume-table').innerHTML =
+  `<thead><tr><th>Stage</th><th class="num">Frames</th><th class="num">Eps</th>
+   <th class="num">Peak RSS</th></tr></thead><tbody>` +
+  D.stages.map(s => `<tr>
+     <td class="mono">${esc(s.stage)}</td>
+     <td class="num">${s.frames == null ? '·' : s.frames.toLocaleString()}</td>
+     <td class="num">${s.episodes == null ? '·' : s.episodes}</td>
+     <td class="num">${fmt(s.rss_mb, 0)} MB</td></tr>`).join('') + '</tbody>';
+
+/* ── check durations ────────────────────────────────────────────────── */
+(() => {
+  const top = D.checks.slice(0, 9);
+  const restSum = D.checks.slice(9).reduce((a, c) => a + c.seconds, 0);
+  const rows = top.map(c => ({label: c.check, value: c.seconds,
+                              kind: c.check.startsWith('observability') ? 'obs' : 'check'}));
+  if (restSum > 0) rows.push({label: `+ ${D.checks.length - 9} more checks`,
+                              value: restSum, kind: 'rest'});
+  barChart($('check-chart'), rows, {
+    labelW: 240, unit: ' s', decimals: 4, aria: 'Per-check duration in seconds',
+    colorFor: r => r.kind === 'obs' ? 'var(--signal)'
+                 : r.kind === 'rest' ? 'var(--ink-3)' : 'var(--accent)',
+  });
+})();
+
+/* ── episode strip ──────────────────────────────────────────────────── */
+(() => {
+  const strip = $('episode-strip'), read = $('episode-readout');
+  strip.innerHTML = D.health.map(e => `
+    <div class="cell s-${esc(e.status)}" data-id="${e.id}" tabindex="0"
+         role="img" aria-label="episode ${e.id}, ${esc(e.status)}"></div>`).join('');
+  const show = id => {
+    const e = D.health.find(x => x.id === Number(id));
+    if (!e) return;
+    read.innerHTML =
+      `episode <b>${e.id}</b> &nbsp;·&nbsp; <b>${esc(e.status)}</b> &nbsp;·&nbsp; ` +
+      `${e.frames} frames over ${fmt(e.dur, 1)} s<br>` +
+      `temporal <b>${fmt(e.t, 2)}</b> &nbsp; numeric <b>${fmt(e.n, 2)}</b> &nbsp; ` +
+      `alignment <b>${fmt(e.a, 2)}</b> &nbsp; qc_bitmask <b>${e.mask}</b>`;
+  };
+  strip.addEventListener('mouseover', ev => {
+    const c = ev.target.closest('.cell'); if (c) show(c.dataset.id);
+  });
+  strip.addEventListener('focusin', ev => {
+    const c = ev.target.closest('.cell'); if (c) show(c.dataset.id);
+  });
+  const worst = D.health.filter(e => e.status !== 'passed')[0] || D.health[0];
+  show(worst.id);
+})();
+
+/* ── coverage ───────────────────────────────────────────────────────── */
+/* A table rather than bars: at this column width bar labels are unreadable,
+   and four channels all at 100% carry no shape worth drawing. */
+$('coverage-table').innerHTML =
+  `<thead><tr><th>Modality</th><th class="num">Present</th>
+   <th class="num">Missing</th></tr></thead><tbody>` +
+  Object.entries(D.coverage).map(([m, v]) => {
+    const missing = D.missing_ratio ? (D.missing_ratio[m] ?? 0) : 0;
+    const full = v >= 0.999;
+    return `<tr>
+      <td class="mono">${esc(m)}</td>
+      <td class="num"><span class="pill ${full ? 'p-ok' : 'p-warn'}">${fmt(v * 100, 0)}%</span></td>
+      <td class="num">${fmt(missing * 100, 2)}%</td></tr>`;
+  }).join('') + '</tbody>';
+
+/* ── alignment ──────────────────────────────────────────────────────── */
+(() => {
+  const rows = [
+    {label: 'clean', value: D.align.mean_us / 1000, kind: 'ok'},
+    {label: 'one frame period', value: 33.333, kind: 'limit'},
+    {label: 'video shifted 5 s', value: D.align.shifted_ms, kind: 'bad'},
+  ];
+  const max = Math.max(...rows.map(r => r.value));
+  const w = 520, labelW = 150, valueW = 96, rowH = 30, gap = 8;
+  const plotW = w - labelW - valueW;
+  const scale = v => v <= 0 ? 0
+    : Math.max(2, (Math.log10(v + 0.001) - Math.log10(0.0001)) /
+                  (Math.log10(max) - Math.log10(0.0001)) * plotW);
+  const color = {ok: 'var(--ok)', limit: 'var(--ink-3)', bad: 'var(--crit)'};
+  $('align-chart').innerHTML = `<svg viewBox="0 0 ${w} ${rows.length * (rowH + gap)}"
+      role="img" aria-label="Cross-modal alignment offsets, log scale">` +
+    rows.map((r, i) => {
+      const y = i * (rowH + gap);
+      const label = r.value >= 1 ? `${fmt(r.value, r.kind === 'bad' ? 0 : 1)} ms`
+                                 : `${fmt(D.align.mean_us, 2)} µs`;
+      return `<text class="bar-label" x="0" y="${y + rowH / 2 + 4}">${esc(r.label)}</text>
+        <rect x="${labelW}" y="${y + 6}" width="${plotW}" height="${rowH - 12}"
+              fill="var(--grid)" rx="2"/>
+        <rect x="${labelW}" y="${y + 6}" width="${scale(r.value)}" height="${rowH - 12}"
+              fill="${color[r.kind]}" rx="2"
+              ${r.kind === 'limit' ? 'opacity=".55"' : ''}/>
+        <text class="bar-value" x="${w}" y="${y + rowH / 2 + 4}"
+              text-anchor="end" fill="${color[r.kind]}">${label}</text>`;
+    }).join('') + '</svg>';
+})();
+
+/* ── tail ratios ────────────────────────────────────────────────────── */
+$('tail-table').innerHTML =
+  `<thead><tr><th>Channel</th><th class="num">max ÷ p99.5</th>
+   <th class="num">Rail hits</th><th>Reading</th></tr></thead><tbody>` +
+  Object.entries(D.tail_ratio).map(([m, v]) => `<tr>
+    <td class="mono">${esc(m)}</td>
+    <td class="num">${fmt(v, 3)}</td>
+    <td class="num">${D.saturation[m] ?? 0}</td>
+    <td><span class="pill ${v > 2 ? 'p-warn' : 'p-ok'}">${v > 2 ? 'impulsive' : 'nominal'}</span></td>
+  </tr>`).join('') + '</tbody>';
+
+/* ── cardinality ────────────────────────────────────────────────────── */
+(() => {
+  const p = D.cardinality.projection.find(r => r.episodes === 344000000);
+  const tsdbGB = p.tsdb_gb, pqGB = p.parquet_gb;
+  const rows = [
+    {label: 'Prometheus-style TSDB, resident',
+     value: tsdbGB, txt: `${fmt(tsdbGB / 1000, 1)} TB`, color: 'var(--crit)'},
+    {label: 'Columnar rows, on disk',
+     value: pqGB, txt: `${fmt(pqGB, 2)} GB`, color: 'var(--ok)'},
+  ];
+  const lmax = Math.log10(tsdbGB), lmin = Math.log10(pqGB) - 1;
+  $('card-bars').innerHTML = rows.map(r => `
+    <div class="cmp-row">
+      <div class="cmp-top"><span>${esc(r.label)}</span><span>${r.txt}</span></div>
+      <div class="cmp-track">
+        <div class="cmp-fill" style="width:${
+          Math.max(3, (Math.log10(r.value) - lmin) / (lmax - lmin) * 100)
+        }%;background:${r.color}"></div>
+      </div>
+    </div>`).join('');
+
+  const rowsT = D.cardinality.projection.map(r => ({
+    n: r.episodes, series: r.series, tsdb: r.tsdb_gb, pq: r.parquet_gb}));
+  $('card-chart').innerHTML =
+    `<div class="scroll"><table>
+      <thead><tr><th>Episodes / year</th><th class="num">Series if labelled</th>
+      <th class="num">TSDB memory</th><th class="num">Columnar</th></tr></thead><tbody>` +
+    rowsT.map(r => `<tr>
+      <td class="mono">${r.n.toLocaleString()}</td>
+      <td class="num">${r.series.toLocaleString()}</td>
+      <td class="num" style="color:${r.tsdb > 100 ? 'var(--crit)' : 'inherit'}">${
+        r.tsdb >= 1000 ? fmt(r.tsdb / 1000, 1) + ' TB' : fmt(r.tsdb, 2) + ' GB'}</td>
+      <td class="num" style="color:var(--ok)">${fmt(r.pq, 2)} GB</td></tr>`).join('') +
+    `</tbody></table></div>
+     <p class="note" style="margin-bottom:18px">Measured per-series cost
+      <b>${D.cardinality.bytes_series} B</b> · per columnar row
+      <b>${D.cardinality.bytes_row} B</b> · safe-label baseline
+      <b>${D.cardinality.safe} series</b>.</p>`;
+})();
+
+/* ── video tiers ────────────────────────────────────────────────────── */
+(() => {
+  const v = D.video, t0 = v.tier0, t1 = v.tier1;
+  $('video-tiers').innerHTML =
+    `<thead><tr><th>Tier</th><th>What it reads</th><th class="num">Cost</th>
+     <th class="num">For the whole version</th></tr></thead><tbody>
+     <tr><td class="mono">0</td><td>container headers only</td>
+         <td class="num">${fmt(t0.ms_per_file, 2)} ms / file</td>
+         <td class="num">${fmt(t0.ms_total, 1)} ms</td></tr>
+     <tr><td class="mono">1</td><td>5 sampled frames per clip</td>
+         <td class="num">${fmt(t1.ms_each, 0)} ms / clip</td>
+         <td class="num">~${fmt(t1.s_all_refs, 1)} s</td></tr>
+     <tr><td class="mono">2</td><td>perceptual hash per sample</td>
+         <td class="num">free</td><td class="num">frames already decoded</td></tr>
+     <tr><td class="mono">3</td><td>embeddings, VLM</td>
+         <td class="num">—</td>
+         <td><span class="pill p-acc">documented, not built</span></td></tr>
+     <tr><td class="mono">full</td><td>decode everything</td>
+         <td class="num">—</td>
+         <td class="num" style="color:var(--crit)">${
+            fmt(t0.decoded_bytes / 1e9, 1)} GB (${t0.decode_amplification}×)</td></tr>
+     </tbody>`;
+
+  $('video-tier1').innerHTML =
+    `<thead><tr><th>Camera</th><th class="num">Bright</th><th class="num">Contrast</th>
+     <th class="num">Sharpness</th><th class="num">Interframe</th>
+     <th class="num">Black</th><th>State</th></tr></thead><tbody>` +
+    t1.rows.slice(0, 6).map(r => `<tr>
+      <td class="mono">${esc(r.modality)}</td>
+      <td class="num">${fmt(r.brightness, 1)}</td>
+      <td class="num">${fmt(r.contrast, 1)}</td>
+      <td class="num">${fmt(r.sharpness, 1)}</td>
+      <td class="num">${fmt(r.interframe, 1)}</td>
+      <td class="num">${fmt(r.black, 2)}</td>
+      <td><span class="pill ${r.frozen ? 'p-crit' : 'p-ok'}">${
+        r.frozen ? 'frozen' : 'live'}</span></td></tr>`).join('') + '</tbody>';
+})();
+
+/* ── release contract ───────────────────────────────────────────────── */
+(() => {
+  const c = D.contract;
+  const card = (title, sub, released, extra) => `
+    <div style="border:1px solid var(--rule);border-radius:3px;padding:13px 15px;
+                background:var(--panel-2)">
+      <div class="mono" style="font-size:11px;letter-spacing:.11em;
+           text-transform:uppercase;color:var(--ink-3)">${esc(title)}</div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin-top:8px">
+        <span class="pill ${released ? 'p-ok' : 'p-crit'}"
+              style="font-size:13px;padding:3px 10px">${released ? 'release' : 'blocked'}</span>
+        <span class="mono" style="font-size:12px;color:var(--ink-2)">${esc(extra)}</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--ink-2);margin-top:7px">${esc(sub)}</div>
+    </div>`;
+  $('contract-verdicts').innerHTML =
+    `<div style="display:flex;flex-direction:column;gap:10px">
+      ${card('Baseline', 'the version the contract was inferred from',
+             c.baseline.released,
+             `${c.baseline.failures} failed · ${c.baseline.warnings} warned`)}
+      ${card('After a 1.35× rescale of action.joint',
+             `${c.qc_checks} QC checks pass · ${c.qc_blocking_candidate} blocking findings`,
+             c.candidate.released,
+             `${c.candidate.failures} failed · ${c.candidate.warnings} warned`)}
+    </div>`;
+
+  $('contract-failures').innerHTML =
+    `<thead><tr><th>Failed clause</th><th class="num">Observed</th>
+     <th class="num">Contract</th></tr></thead><tbody>` +
+    c.failed_clauses.map(f => `<tr>
+      <td class="mono">${esc(f.name)}</td>
+      <td class="num" style="color:var(--crit)">${esc(f.observed)}</td>
+      <td class="num">${esc(f.expected.replace('<= ', '≤ '))}</td></tr>`).join('') +
+    `</tbody>`;
+})();
+
+/* ── drift calibration ──────────────────────────────────────────────── */
+$('drift-null').innerHTML =
+  `<thead><tr><th class="num">n</th><th class="num">Median null PSI</th>
+   <th class="num">P(&gt; 0.25)</th></tr></thead><tbody>` +
+  D.drift_null.map(r => `<tr>
+    <td class="num">${r.n.toLocaleString()}</td>
+    <td class="num" style="color:${r.median > 0.25 ? 'var(--crit)' : 'inherit'}">${fmt(r.median, 3)}</td>
+    <td class="num" style="color:${r.fp > 5 ? 'var(--crit)' : 'var(--ok)'}">${fmt(r.fp, 1)}%</td>
+  </tr>`).join('') + '</tbody>';
+
+$('drift-roc').innerHTML =
+  `<thead><tr><th>Condition</th><th class="num">PSI fires</th>
+   <th class="num">Mean-shift fires</th></tr></thead><tbody>` +
+  D.drift_roc.map(r => {
+    const good = r.cond === 'no drift' ? (v) => v < 5 : (v) => v > 85;
+    const col = v => good(v) ? 'var(--ok)' : (r.cond === 'no drift' ? 'var(--crit)' : 'var(--signal)');
+    return `<tr><td class="mono">${esc(r.cond)}</td>
+      <td class="num" style="color:${col(r.psi)}">${fmt(r.psi, 1)}%</td>
+      <td class="num" style="color:${col(r.ms)}">${fmt(r.ms, 1)}%</td></tr>`;
+  }).join('') + '</tbody>';
+
+/* ── history tables ─────────────────────────────────────────────────── */
+$('qc-table').innerHTML =
+  `<thead><tr><th>Version</th><th class="num">Checks</th><th class="num">Findings</th>
+   <th class="num">Pass</th><th class="num">Warn</th><th class="num">Rej</th>
+   <th>Status</th></tr></thead><tbody>` +
+  D.qc_exec.map(q => `<tr>
+    <td class="mono">${esc(q.version)}</td>
+    <td class="num">${q.checks_run}</td><td class="num">${q.findings}</td>
+    <td class="num">${q.episodes_passed}</td><td class="num">${q.episodes_warned}</td>
+    <td class="num">${q.episodes_rejected}</td>
+    <td><span class="pill ${q.dataset_status === 'passed' ? 'p-ok' :
+      q.dataset_status === 'rejected' ? 'p-crit' : 'p-warn'}">${esc(q.dataset_status)}</span></td>
+  </tr>`).join('') + '</tbody>';
+
+$('runs-table').innerHTML =
+  `<thead><tr><th>Run</th><th>Started</th><th class="num">Seconds</th>
+   <th>Status</th></tr></thead><tbody>` +
+  D.runs.map(r => `<tr>
+    <td class="mono">…${esc(r.run)}</td><td class="mono">${esc(r.started)}</td>
+    <td class="num">${fmt(r.seconds, 2)}</td>
+    <td><span class="pill ${r.status === 'ok' ? 'p-ok' : 'p-crit'}">${esc(r.status)}</span></td>
+  </tr>`).join('') + '</tbody>';
+</script>
