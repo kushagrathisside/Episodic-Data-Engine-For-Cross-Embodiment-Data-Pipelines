@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="516" viewBox="0 0 940 516" role="img" aria-label="Storage plane diagram showing that video blobs are content-addressed and shared by all three dataset versions, while Parquet tables are materialised per version and the training version references its source's frame table rather than copying it.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-store{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-ext{fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 3;opacity:.7}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-hot{stroke:var(--signal);stroke-width:2;fill:none}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.4;stroke-dasharray:4 3}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+  </style>
+  <rect width="940" height="516" fill="var(--panel)"/>
+        <defs>
+          <marker id="ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <text class="t-tag" x="24" y="46">VERSIONS</text>
+        <rect class="s-proc" x="168" y="30" width="204" height="60" rx="4"/>
+        <text class="t-lbl" x="270" y="56" text-anchor="middle">raw/v1</text>
+        <text class="t-sm" x="270" y="78" text-anchor="middle">50 ep · 19,631 frames</text>
+        <rect class="s-proc" x="400" y="30" width="204" height="60" rx="4"/>
+        <text class="t-lbl" x="502" y="56" text-anchor="middle">clean/v1</text>
+        <text class="t-sm" x="502" y="78" text-anchor="middle">48 ep · 18,668 frames</text>
+        <rect class="s-proc" x="632" y="30" width="204" height="60" rx="4"/>
+        <text class="t-lbl" x="734" y="56" text-anchor="middle">training/v1</text>
+        <text class="t-sm" x="734" y="78" text-anchor="middle">48 ep · splits + contract</text>
+        <path class="s-line" d="M376,60 L396,60" marker-end="url(#ar6)"/>
+        <path class="s-line" d="M608,60 L628,60" marker-end="url(#ar6)"/>
+
+        <text class="t-tag" x="24" y="178">TABULAR</text>
+        <text class="t-sm" x="24" y="200">per version</text>
+        <rect class="s-store" x="168" y="158" width="204" height="62" rx="3"/>
+        <text class="t-sm" x="270" y="184" text-anchor="middle">frames/  903 KB</text>
+        <text class="t-sm" x="270" y="206" text-anchor="middle">episodes/  8.2 KB</text>
+        <rect class="s-store" x="400" y="158" width="204" height="62" rx="3"/>
+        <text class="t-sm" x="502" y="184" text-anchor="middle">frames/  955 KB</text>
+        <text class="t-sm" x="502" y="206" text-anchor="middle">episodes/  8.5 KB</text>
+        <rect class="s-store" x="632" y="158" width="204" height="62" rx="3"/>
+        <text class="t-sm" x="734" y="184" text-anchor="middle">episodes/  8.7 KB</text>
+        <text class="t-sm" x="734" y="206" text-anchor="middle">index/  3.5 KB</text>
+        <path class="s-line" d="M270,94 L270,152" marker-end="url(#ar6)"/>
+        <path class="s-line" d="M502,94 L502,152" marker-end="url(#ar6)"/>
+        <path class="s-line" d="M734,94 L734,152" marker-end="url(#ar6)"/>
+
+        <path class="s-line-hot" d="M628,182 L608,182" marker-end="url(#ar6)" stroke="var(--signal)"/>
+        <text class="t-hot" x="616" y="244" text-anchor="middle">frame_table_version: "clean/v1"</text>
+        <text class="t-hot" x="616" y="264" text-anchor="middle">referenced, not copied</text>
+
+        <text class="t-tag" x="24" y="330">BINARY</text>
+        <text class="t-sm" x="24" y="352">shared</text>
+        <rect class="s-hot" x="168" y="304" width="668" height="80" rx="4"/>
+        <text class="t-lbl" x="502" y="334" text-anchor="middle">blobs/ — content-addressed by SHA-256</text>
+        <text class="t-sm" x="502" y="360" text-anchor="middle">7c7f2674….mp4 (320.4 MB)    ·    f605a80c….mp4 (149.2 MB)</text>
+        <text class="t-sm" x="502" y="378" text-anchor="middle">stored once, hardlinked into the source cache</text>
+        <path class="s-line" d="M270,224 L270,298" marker-end="url(#ar6)"/>
+        <path class="s-line" d="M502,224 L502,298" marker-end="url(#ar6)"/>
+        <path class="s-line" d="M734,224 L734,298" marker-end="url(#ar6)"/>
+        <text class="t-sm" x="284" y="288">blob_id</text>
+        <text class="t-sm" x="516" y="288">blob_id</text>
+        <text class="t-sm" x="748" y="288">blob_id</text>
+
+        <text class="t-tag" x="24" y="452">METADATA</text>
+        <text class="t-sm" x="24" y="474">mutable</text>
+        <rect class="s-store" x="168" y="426" width="668" height="60" rx="4"/>
+        <text class="t-lbl" x="502" y="452" text-anchor="middle">catalog.db — SQLite, WAL</text>
+        <text class="t-sm" x="502" y="474" text-anchor="middle">versions · episodes · tasks · modalities · transform_runs · episode_lineage · qc_records</text>
+        <path class="s-line-soft" d="M270,388 L270,420"/>
+        <path class="s-line-soft" d="M502,388 L502,420"/>
+        <path class="s-line-soft" d="M734,388 L734,420"/>
+
+        <rect x="856" y="304" width="76" height="80" rx="4" fill="var(--signal-soft)" stroke="var(--signal)" stroke-width="1.5"/>
+        <text class="t-hot" x="894" y="336" text-anchor="middle" font-size="14">470 MB</text>
+        <text class="t-sm" x="894" y="356" text-anchor="middle">saved by</text>
+        <text class="t-sm" x="894" y="372" text-anchor="middle">dedup</text>
+      </svg>

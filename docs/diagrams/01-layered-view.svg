@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1184" height="578" viewBox="0 0 1184 578" role="img" aria-label="Layered decomposition. Five bands through which data flows downward: source adapters, the canonical contract, persistence in three planes, stateless processing stages, and consumption through the public interface. To the right, the observability package sits off the stack: qc and pipeline import it, and it imports only schemas, validation.base and storage.video — never a stage.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-store{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-ext{fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 3;opacity:.7}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-hot{stroke:var(--signal);stroke-width:2;fill:none}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.4;stroke-dasharray:4 3}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+  </style>
+  <rect width="1184" height="578" fill="var(--panel)"/>
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <rect x="176" y="30" width="760" height="84" rx="4" fill="var(--panel-2)" stroke="var(--rule)" stroke-width="1"/>
+        <text class="t-tag" x="24" y="60">SOURCE</text>
+        <text class="t-sm" x="24" y="80">adapters only</text>
+        <rect x="176" y="138" width="760" height="84" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-tag" x="24" y="168">CONTRACT</text>
+        <text class="t-sm" x="24" y="188">canonical model</text>
+        <rect x="176" y="246" width="760" height="100" rx="4" fill="var(--panel-2)" stroke="var(--rule)" stroke-width="1"/>
+        <text class="t-tag" x="24" y="276">PERSISTENCE</text>
+        <text class="t-sm" x="24" y="296">three planes</text>
+        <rect x="176" y="370" width="760" height="100" rx="4" fill="var(--panel-2)" stroke="var(--rule)" stroke-width="1"/>
+        <text class="t-tag" x="24" y="400">PROCESSING</text>
+        <text class="t-sm" x="24" y="420">stateless stages</text>
+        <rect x="176" y="494" width="760" height="68" rx="4" fill="var(--panel-2)" stroke="var(--rule)" stroke-width="1"/>
+        <text class="t-tag" x="24" y="524">CONSUMPTION</text>
+        <text class="t-sm" x="24" y="544">public interface</text>
+        <rect class="s-box" x="200" y="48" width="216" height="48" rx="3"/>
+        <text class="t-lbl" x="308.0" y="74" text-anchor="middle">ingestion</text>
+        <text class="t-sm" x="308.0" y="94" text-anchor="middle">the only format-aware layer</text>
+        <rect class="s-box" x="440" y="48" width="216" height="48" rx="3"/>
+        <text class="t-lbl" x="548.0" y="74" text-anchor="middle">LeRobotAdapter</text>
+        <text class="t-sm" x="548.0" y="94" text-anchor="middle">LeRobot v3.0</text>
+        <rect class="s-box" x="680" y="48" width="232" height="48" rx="3" stroke-dasharray="4 3"/>
+        <text class="t-lbl" x="796.0" y="74" text-anchor="middle">&lt;future adapter&gt;</text>
+        <text class="t-sm" x="796.0" y="94" text-anchor="middle">same 5-method contract</text>
+        <rect class="s-proc" x="200" y="156" width="216" height="48" rx="3"/>
+        <text class="t-lbl" x="308.0" y="182" text-anchor="middle">schemas</text>
+        <text class="t-sm" x="308.0" y="202" text-anchor="middle">Dataset · Episode · Frame</text>
+        <rect class="s-proc" x="440" y="156" width="472" height="48" rx="3"/>
+        <text class="t-lbl" x="676.0" y="185.0" text-anchor="middle">ModalitySpec · QCRecord · TransformRun · manifests</text>
+        <rect class="s-store" x="200" y="268" width="168" height="56" rx="3"/>
+        <text class="t-lbl" x="284.0" y="294" text-anchor="middle">storage.blob</text>
+        <text class="t-sm" x="284.0" y="314" text-anchor="middle">content-addressed</text>
+        <rect class="s-store" x="380" y="268" width="168" height="56" rx="3"/>
+        <text class="t-lbl" x="464.0" y="294" text-anchor="middle">storage.tabular</text>
+        <text class="t-sm" x="464.0" y="314" text-anchor="middle">Parquet, streamed</text>
+        <rect class="s-store" x="560" y="268" width="168" height="56" rx="3"/>
+        <text class="t-lbl" x="644.0" y="294" text-anchor="middle">catalog</text>
+        <text class="t-sm" x="644.0" y="314" text-anchor="middle">SQLite, relational</text>
+        <rect class="s-store" x="740" y="268" width="168" height="56" rx="3"/>
+        <text class="t-lbl" x="824.0" y="294" text-anchor="middle">storage.video</text>
+        <text class="t-sm" x="824.0" y="314" text-anchor="middle">seek + bounded decode</text>
+        <rect class="s-box" x="200" y="392" width="132" height="56" rx="3"/>
+        <text class="t-lbl" x="266.0" y="418" text-anchor="middle">validation</text>
+        <text class="t-sm" x="266.0" y="438" text-anchor="middle">24 checks</text>
+        <rect class="s-box" x="344" y="392" width="132" height="56" rx="3"/>
+        <text class="t-lbl" x="410.0" y="418" text-anchor="middle">qc</text>
+        <text class="t-sm" x="410.0" y="438" text-anchor="middle">gate policy</text>
+        <rect class="s-box" x="488" y="392" width="132" height="56" rx="3"/>
+        <text class="t-lbl" x="554.0" y="418" text-anchor="middle">synchronization</text>
+        <text class="t-sm" x="554.0" y="438" text-anchor="middle">alignment</text>
+        <rect class="s-box" x="632" y="392" width="132" height="56" rx="3"/>
+        <text class="t-lbl" x="698.0" y="418" text-anchor="middle">transformations</text>
+        <text class="t-sm" x="698.0" y="438" text-anchor="middle">operators</text>
+        <rect class="s-box" x="776" y="392" width="132" height="56" rx="3"/>
+        <text class="t-lbl" x="842.0" y="418" text-anchor="middle">versioning</text>
+        <text class="t-sm" x="842.0" y="438" text-anchor="middle">lineage</text>
+        <rect class="s-hot" x="200" y="510" width="220" height="40" rx="3"/>
+        <text class="t-lbl" x="310.0" y="535.0" text-anchor="middle">engine — DataEngine</text>
+        <rect class="s-box" x="440" y="510" width="150" height="40" rx="3"/>
+        <text class="t-lbl" x="515.0" y="535.0" text-anchor="middle">model_adapters</text>
+        <rect class="s-box" x="610" y="510" width="140" height="40" rx="3"/>
+        <text class="t-lbl" x="680.0" y="535.0" text-anchor="middle">evaluation</text>
+        <rect class="s-box" x="770" y="510" width="142" height="40" rx="3"/>
+        <text class="t-lbl" x="841.0" y="535.0" text-anchor="middle">feedback</text>
+        <path class="s-line" d="M556,114 L556,132" marker-end="url(#ar2)"/>
+        <path class="s-line" d="M556,222 L556,240" marker-end="url(#ar2)"/>
+        <path class="s-line" d="M556,346 L556,364" marker-end="url(#ar2)"/>
+        <path class="s-line" d="M556,470 L556,488" marker-end="url(#ar2)"/>
+        <text class="t-sm" x="568" y="128">data flows</text>
+        <path class="s-line-soft" d="M940,540 L952,540 Q960,540 960,522 L960,58 Q960,40 948,40 L940,40"/>
+        <text class="t-hot" x="158" y="300" text-anchor="middle" transform="rotate(90 158 300)">data flows downward</text>
+      
+        <!-- observability: off the vertical axis, imported by processing -->
+        <rect x="956" y="138" width="212" height="366" rx="5" fill="none"
+              stroke="var(--signal)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text class="t-tag" x="972" y="162" style="fill:var(--signal)">OBSERVABILITY</text>
+        <text class="t-sm" x="972" y="180">not a layer</text>
+
+        <rect class="s-hot" x="972" y="194" width="180" height="32" rx="3"/>
+        <text class="t-sm" x="1062" y="214" text-anchor="middle">context · session</text>
+        <rect class="s-box" x="972" y="232" width="180" height="32" rx="3"/>
+        <text class="t-sm" x="1062" y="252" text-anchor="middle">metrics · instruments</text>
+        <rect class="s-box" x="972" y="270" width="180" height="32" rx="3"/>
+        <text class="t-sm" x="1062" y="290" text-anchor="middle">events · exporters</text>
+        <rect class="s-box" x="972" y="308" width="180" height="32" rx="3"/>
+        <text class="t-sm" x="1062" y="328" text-anchor="middle">health · drift</text>
+        <rect class="s-box" x="972" y="346" width="180" height="32" rx="3"/>
+        <text class="t-sm" x="1062" y="366" text-anchor="middle">contracts · video_health</text>
+
+        <path d="M972,394 L1152,394" stroke="var(--rule-2)" stroke-width="1"/>
+        <text class="t-hot" x="972" y="416">→ qc · pipeline import it</text>
+        <text class="t-sm" x="972" y="438" style="opacity:.62">← it imports schemas,</text>
+        <text class="t-sm" x="972" y="456" style="opacity:.62">   storage.video and</text>
+        <text class="t-sm" x="972" y="474" style="opacity:.62">   validation.base only</text>
+        <text class="t-sm" x="972" y="494" style="opacity:.62">37 metrics · +0.8% cost</text>
+
+        <!-- connectors, unlabelled: the rail explains both directions -->
+        <path d="M936,404 L954,404" stroke="var(--signal)" stroke-width="1.8"
+              fill="none" marker-end="url(#ar2)"/>
+        <path d="M954,286 L936,286" stroke="currentColor" stroke-width="1.2" opacity=".45"
+              stroke-dasharray="4 3" fill="none" marker-end="url(#ar2)"/>
+</svg>

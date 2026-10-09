@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="628" viewBox="0 0 960 628" role="img" aria-label="The observability plane: a session minted once per pipeline run observes every stage without causing work, and fans telemetry into three signal classes — bounded-label metrics to a Prometheus textfile, high-cardinality event rows to Parquet mirrored in the catalog, and spans to newline-delimited JSON. Metrics aggregate populations, events identify individuals, traces connect them.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-ok{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
+    .s-err{fill:var(--err-soft);stroke:var(--err);stroke-width:1.5}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.42;stroke-dasharray:4 3}
+    .s-dash{fill:none;stroke:var(--rule-2);stroke-width:1.5;stroke-dasharray:6 4}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-xs{font-family:var(--mono);font-size:10.5px;fill:currentColor;opacity:.68}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-ok{font-family:var(--mono);font-size:11.5px;fill:var(--ok);font-weight:600}
+    .t-err{font-family:var(--mono);font-size:11.5px;fill:var(--err);font-weight:600}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+  </style>
+  <rect width="960" height="628" fill="var(--panel)"/>
+  <defs>
+    <marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <!-- ── the pipeline being observed ───────────────────────────────── -->
+  <rect class="s-dash" x="24" y="30" width="912" height="78" rx="5"/>
+  <text class="t-tag" x="40" y="52">THE PIPELINE — unchanged, unaware</text>
+  <g>
+    <rect class="s-proc" x="42" y="62" width="102" height="32" rx="4"/>
+    <text class="t-sm" x="93" y="82" text-anchor="middle">download</text>
+    <rect class="s-proc" x="152" y="62" width="102" height="32" rx="4"/>
+    <text class="t-sm" x="203" y="82" text-anchor="middle">ingest</text>
+    <rect class="s-hot" x="262" y="62" width="102" height="32" rx="4"/>
+    <text class="t-sm" x="313" y="82" text-anchor="middle">validate</text>
+    <rect class="s-proc" x="372" y="62" width="102" height="32" rx="4"/>
+    <text class="t-sm" x="423" y="82" text-anchor="middle">transform</text>
+    <rect class="s-hot" x="482" y="62" width="120" height="32" rx="4"/>
+    <text class="t-sm" x="542" y="82" text-anchor="middle">qc_post_tf</text>
+    <rect class="s-proc" x="610" y="62" width="94" height="32" rx="4"/>
+    <text class="t-sm" x="657" y="82" text-anchor="middle">build</text>
+    <rect class="s-proc" x="712" y="62" width="104" height="32" rx="4"/>
+    <text class="t-sm" x="764" y="82" text-anchor="middle">evaluate</text>
+    <rect class="s-proc" x="824" y="62" width="94" height="32" rx="4"/>
+    <text class="t-sm" x="871" y="82" text-anchor="middle">feedback</text>
+  </g>
+
+  <!-- observes, never causes -->
+  <path class="s-line-soft" d="M480,108 L480,140" marker-end="url(#oa)"/>
+  <text class="t-xs" x="492" y="128">observes work already happening · never causes any · +0.8%</text>
+
+  <!-- ── the session ───────────────────────────────────────────────── -->
+  <rect class="s-box" x="212" y="146" width="536" height="72" rx="5"/>
+  <text class="t-tag" x="230" y="167">OBSERVABILITY SESSION — minted once per run</text>
+  <text class="t-sm" x="230" y="189">run_id · trace_id  (OTel wire format)</text>
+  <text class="t-xs" x="730" y="189" text-anchor="end">nullable outside a run</text>
+  <text class="t-xs" x="230" y="208">a ContextVar, not a global — concurrent runs cannot collide</text>
+
+  <!-- the routing question -->
+  <path class="s-line" d="M480,218 L480,246"/>
+  <rect class="s-box" x="286" y="246" width="388" height="34" rx="4"/>
+  <text class="t-lbl" x="480" y="268" text-anchor="middle">Is this fact about a POPULATION or an INDIVIDUAL?</text>
+
+  <path class="s-line" d="M480,280 L480,296 L172,296 L172,326" marker-end="url(#oa)"/>
+  <path class="s-line" d="M480,280 L480,326" marker-end="url(#oa)"/>
+  <path class="s-line" d="M480,280 L480,296 L800,296 L800,326" marker-end="url(#oa)"/>
+
+  <!-- ── lane A · metrics ──────────────────────────────────────────── -->
+  <rect class="s-ok" x="30" y="326" width="284" height="96" rx="5"/>
+  <text class="t-tag" x="48" y="348" style="fill:var(--ok)">METRICS — populations</text>
+  <text class="t-sm" x="48" y="370">counter · gauge · histogram</text>
+  <text class="t-xs" x="48" y="389">labels bounded by code or an enum:</text>
+  <text class="t-xs" x="48" y="406">stage · check_name · severity · modality</text>
+  <path class="s-line" d="M172,422 L172,452" marker-end="url(#oa)"/>
+  <rect class="s-box" x="30" y="452" width="284" height="62" rx="4"/>
+  <text class="t-sm" x="48" y="474">observability/metrics/rde.prom</text>
+  <text class="t-xs" x="48" y="493">mtime is the freshness signal</text>
+
+  <!-- ── lane B · events ───────────────────────────────────────────── -->
+  <rect class="s-proc" x="338" y="326" width="284" height="96" rx="5"/>
+  <text class="t-tag" x="356" y="348">EVENTS — individuals</text>
+  <text class="t-sm" x="356" y="370">5 row types, episode / run grain</text>
+  <text class="t-xs" x="356" y="389">carries what a metric never may:</text>
+  <text class="t-xs" x="356" y="406">episode_id · run_id · blob_id · values</text>
+  <path class="s-line" d="M480,422 L480,452" marker-end="url(#oa)"/>
+  <rect class="s-box" x="338" y="452" width="284" height="62" rx="4"/>
+  <text class="t-sm" x="356" y="474">events/*.parquet  →  DuckDB</text>
+  <text class="t-xs" x="356" y="493">headers mirrored into the catalog</text>
+
+  <!-- ── lane C · traces ───────────────────────────────────────────── -->
+  <rect class="s-box" x="646" y="326" width="284" height="96" rx="5"/>
+  <text class="t-tag" x="664" y="348">TRACES — causality</text>
+  <text class="t-sm" x="664" y="370">one span per stage, never per frame</text>
+  <text class="t-xs" x="664" y="389">at 135B frames/yr a per-frame span</text>
+  <text class="t-xs" x="664" y="406">costs more to store than the frames</text>
+  <path class="s-line" d="M800,422 L800,452" marker-end="url(#oa)"/>
+  <rect class="s-box" x="646" y="452" width="284" height="62" rx="4"/>
+  <text class="t-sm" x="664" y="474">spans/&lt;run_id&gt;.ndjson</text>
+  <text class="t-xs" x="664" y="493">the trace_id column is the deliverable</text>
+
+  <!-- ── the measured rule ─────────────────────────────────────────── -->
+  <rect class="s-err" x="30" y="536" width="900" height="68" rx="5"/>
+  <text class="t-tag" x="48" y="558" style="fill:var(--err)">THE RULE, MEASURED — why episode_id is refused at the metric layer</text>
+  <text class="t-sm" x="48" y="580">One QC metric labelled with episode_id, at 344M/yr:</text>
+  <text class="t-err" x="48" y="598">264,192,000,000 series  ·  ~167 TB resident</text>
+  <text class="t-sm" x="500" y="580">The identical facts as columnar event rows:</text>
+  <text class="t-ok" x="500" y="598">6.02 GB on disk  ·  the policy raises, it does not advise</text>
+</svg>

@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="984" height="596" viewBox="0 0 984 596" role="img" aria-label="Level 2 data flow inside the QC engine: phase one runs profilers that populate shared context, phase two streams each episode once and fans it out to all episode checks, phase three runs dataset summaries, then the gate classifies episodes and findings are persisted to Parquet and the catalog.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-store{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-ext{fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 3;opacity:.7}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-hot{stroke:var(--signal);stroke-width:2;fill:none}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.4;stroke-dasharray:4 3}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+  </style>
+  <rect width="984" height="596" fill="var(--panel)"/>
+        <defs>
+          <marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <rect x="24" y="34" width="290" height="130" rx="5" fill="none" stroke="var(--rule-2)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text class="t-tag" x="40" y="58">PHASE 1 — priority &lt; 0</text>
+        <rect class="s-proc" x="44" y="72" width="250" height="76" rx="4"/>
+        <text class="t-lbl" x="169" y="98" text-anchor="middle">RangeProfiler</text>
+        <text class="t-sm" x="169" y="120" text-anchor="middle">streams table, learns per-dim</text>
+        <text class="t-sm" x="169" y="140" text-anchor="middle">bounds + step thresholds</text>
+
+        <rect class="s-hot" x="386" y="62" width="230" height="96" rx="4"/>
+        <text class="t-lbl" x="501" y="90" text-anchor="middle">ctx.shared</text>
+        <text class="t-sm" x="501" y="114" text-anchor="middle">value_bounds</text>
+        <text class="t-sm" x="501" y="134" text-anchor="middle">step_thresholds</text>
+        <text class="t-sm" x="501" y="152" text-anchor="middle">distributions</text>
+        <path class="s-line-hot" d="M298,110 L382,110" marker-end="url(#ar7)" stroke="var(--signal)"/>
+        <text class="t-hot" x="340" y="98" text-anchor="middle">writes</text>
+
+        <rect x="24" y="196" width="592" height="196" rx="5" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text class="t-tag" x="40" y="220">PHASE 2 — episode pass · ONE read per episode</text>
+
+        <rect class="s-store" x="44" y="236" width="164" height="66" rx="3"/>
+        <text class="t-lbl" x="126" y="264" text-anchor="middle">frames table</text>
+        <text class="t-sm" x="126" y="286" text-anchor="middle">filter = episode_id</text>
+
+        <rect class="s-proc" x="238" y="236" width="164" height="66" rx="4"/>
+        <text class="t-lbl" x="320" y="264" text-anchor="middle">column union</text>
+        <text class="t-sm" x="320" y="286" text-anchor="middle">required + dynamic</text>
+
+        <rect class="s-proc" x="432" y="236" width="164" height="66" rx="4"/>
+        <text class="t-lbl" x="514" y="264" text-anchor="middle">fan out</text>
+        <text class="t-sm" x="514" y="286" text-anchor="middle">14 episode checks</text>
+
+        <path class="s-line" d="M212,269 L232,269" marker-end="url(#ar7)"/>
+        <path class="s-line" d="M406,269 L426,269" marker-end="url(#ar7)"/>
+        <path class="s-line-hot" d="M501,162 L501,196 Q501,214 514,214 L514,230" marker-end="url(#ar7)" stroke="var(--signal)"/>
+        <text class="t-hot" x="524" y="188">reads</text>
+
+        <rect class="s-box" x="44" y="326" width="126" height="52" rx="3"/>
+        <text class="t-sm" x="107" y="350" text-anchor="middle">structural</text>
+        <text class="t-sm" x="107" y="368" text-anchor="middle">3 episode</text>
+        <rect class="s-box" x="182" y="326" width="126" height="52" rx="3"/>
+        <text class="t-sm" x="245" y="350" text-anchor="middle">temporal</text>
+        <text class="t-sm" x="245" y="368" text-anchor="middle">6</text>
+        <rect class="s-box" x="320" y="326" width="126" height="52" rx="3"/>
+        <text class="t-sm" x="383" y="350" text-anchor="middle">numerical</text>
+        <text class="t-sm" x="383" y="368" text-anchor="middle">4</text>
+        <rect class="s-box" x="458" y="326" width="138" height="52" rx="3"/>
+        <text class="t-sm" x="527" y="350" text-anchor="middle">sync</text>
+        <text class="t-sm" x="527" y="368" text-anchor="middle">1 · alignment</text>
+        <path class="s-line-soft" d="M514,306 L514,320"/>
+
+        <rect x="24" y="424" width="290" height="130" rx="5" fill="none" stroke="var(--rule-2)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text class="t-tag" x="40" y="448">PHASE 3 — dataset summaries</text>
+        <rect class="s-proc" x="44" y="462" width="250" height="76" rx="4"/>
+        <text class="t-lbl" x="169" y="488" text-anchor="middle">9 dataset checks</text>
+        <text class="t-sm" x="169" y="510" text-anchor="middle">distributions · coverage</text>
+        <text class="t-sm" x="169" y="530" text-anchor="middle">null rates · consistency</text>
+        <path class="s-line" d="M169,396 L169,418" marker-end="url(#ar7)"/>
+
+        <rect class="s-hot" x="656" y="236" width="304" height="128" rx="5"/>
+        <text class="t-lbl" x="808" y="266" text-anchor="middle" font-size="15">QCGate</text>
+        <text class="t-sm" x="674" y="294">block_on = (ERROR, CRITICAL)</text>
+        <text class="t-sm" x="674" y="316">max_warnings → QUARANTINED</text>
+        <text class="t-sm" x="674" y="338">advisory_checks never gate</text>
+        <text class="t-hot" x="674" y="358">policy — changing it needs no re-run</text>
+
+        <path class="s-line" d="M600,269 L652,269" marker-end="url(#ar7)"/>
+        <text class="t-sm" x="604" y="256">findings</text>
+        <path class="s-line" d="M298,500 L624,500 Q644,500 644,472 L644,352 Q644,338 652,338" marker-end="url(#ar7)"/>
+
+        <rect class="s-store" x="656" y="418" width="168" height="66" rx="3"/>
+        <text class="t-lbl" x="740" y="446" text-anchor="middle">qc/records</text>
+        <text class="t-sm" x="740" y="468" text-anchor="middle">Parquet · authoritative</text>
+
+        <rect class="s-store" x="832" y="418" width="128" height="66" rx="3"/>
+        <text class="t-lbl" x="896" y="446" text-anchor="middle">catalog</text>
+        <text class="t-sm" x="896" y="468" text-anchor="middle">SQLite · queryable</text>
+
+        <path class="s-line" d="M770,368 L740,368 L740,412" marker-end="url(#ar7)"/>
+        <path class="s-line" d="M850,368 L896,368 L896,412" marker-end="url(#ar7)"/>
+
+        <rect x="656" y="506" width="304" height="58" rx="4" fill="var(--panel-2)" stroke="var(--rule)" stroke-width="1"/>
+        <text class="t-sm" x="674" y="530">episode status ∈ passed | warning |</text>
+        <text class="t-sm" x="674" y="552">rejected | quarantined — nothing deleted</text>
+      </svg>

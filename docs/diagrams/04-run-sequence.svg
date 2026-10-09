@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="764" viewBox="0 0 980 764" role="img" aria-label="Sequence diagram of ingestion and validation: the CLI calls the pipeline, which drives the adapter to hardlink blobs and stream frame batches into Parquet, registers the version in the catalog, then runs the QC engine which streams episodes once and writes findings back.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-store{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-ext{fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 3;opacity:.7}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-hot{stroke:var(--signal);stroke-width:2;fill:none}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.4;stroke-dasharray:4 3}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+  </style>
+  <rect width="980" height="764" fill="var(--panel)"/>
+        <defs>
+          <marker id="ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <rect class="s-box" x="20" y="22" width="128" height="40" rx="3"/>
+        <text class="t-lbl" x="84" y="47" text-anchor="middle">CLI</text>
+        <line class="s-line-soft" x1="84" y1="62" x2="84" y2="736"/>
+        <rect class="s-proc" x="180" y="22" width="128" height="40" rx="3"/>
+        <text class="t-lbl" x="244" y="47" text-anchor="middle">Pipeline</text>
+        <line class="s-line-soft" x1="244" y1="62" x2="244" y2="736"/>
+        <rect class="s-box" x="348" y="22" width="128" height="40" rx="3"/>
+        <text class="t-lbl" x="412" y="47" text-anchor="middle">LeRobotAdapter</text>
+        <line class="s-line-soft" x1="412" y1="62" x2="412" y2="736"/>
+        <rect class="s-store" x="514" y="22" width="128" height="40" rx="3"/>
+        <text class="t-lbl" x="578" y="47" text-anchor="middle">Storage</text>
+        <line class="s-line-soft" x1="578" y1="62" x2="578" y2="736"/>
+        <rect class="s-store" x="654" y="22" width="128" height="40" rx="3"/>
+        <text class="t-lbl" x="718" y="47" text-anchor="middle">Catalog</text>
+        <line class="s-line-soft" x1="718" y1="62" x2="718" y2="736"/>
+        <rect class="s-proc" x="808" y="22" width="128" height="40" rx="3"/>
+        <text class="t-lbl" x="872" y="47" text-anchor="middle">QCEngine</text>
+        <line class="s-line-soft" x1="872" y1="62" x2="872" y2="736"/>
+        <path class="s-line" d="M90,104 L238,104" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="94" y="91">run(config)</text>
+        <path class="s-line" d="M250,148 L406,148" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="254" y="135">inspect()   · metadata only, no decode</text>
+        <path class="s-line-soft" d="M406,192 L250,192" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="254" y="179">SourceProfile + anomalies</text>
+        <path class="s-line" d="M250,236 L406,236" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="254" y="223">register_blobs()</text>
+        <path class="s-line" d="M418,280 L572,280" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="422" y="267">put(video, mode="link")   · 0 bytes copied</text>
+        <rect x="222" y="316" width="392" height="132" rx="4" fill="none" stroke="var(--signal)" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <rect x="222" y="316" width="150" height="24" fill="var(--signal-soft)" stroke="var(--signal)" stroke-width="1.5"/>
+        <text class="t-hot" x="234" y="333">loop · per batch</text>
+        <path class="s-line-hot" d="M250,372 L406,372" marker-end="url(#ar5)" stroke="var(--signal)"/>
+        <text class="t-hot" x="254" y="359">next(iter_frame_batches)</text>
+        <path class="s-line-hot" d="M406,408 L250,408" marker-end="url(#ar5)" stroke="var(--signal)"/>
+        <text class="t-hot" x="254" y="395">RecordBatch (1024 rows)</text>
+        <path class="s-line-hot" d="M250,440 L572,440" marker-end="url(#ar5)" stroke="var(--signal)"/>
+        <text class="t-hot" x="254" y="427">write_batch()  · row_group_size 2048</text>
+        <path class="s-line" d="M250,488 L712,488" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="254" y="475">register_version(manifest, episodes)</text>
+        <path class="s-line" d="M250,532 L866,532" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="254" y="519">QCEngine.run("raw/v1")</text>
+        <rect x="536" y="566" width="410" height="132" rx="4" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <rect x="536" y="566" width="188" height="24" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text class="t-tag" x="548" y="583">loop · per episode (50)</text>
+        <path class="s-line" d="M866,622 L584,622" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="588" y="609">read_table(episode_id, column union)</text>
+        <path class="s-line-soft" d="M584,658 L866,658" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="588" y="645">~400 rows, projected only</text>
+        <text class="t-tag" x="600" y="688">fan out → all 14 episode checks</text>
+        <path class="s-line" d="M866,722 L724,722" marker-end="url(#ar5)"/>
+        <text class="t-sm" x="728" y="709">record_qc() · set_episode_quality()</text>
+        </svg>

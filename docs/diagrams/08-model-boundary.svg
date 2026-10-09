@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="474" viewBox="0 0 940 474" role="img" aria-label="Model adapter boundary: the data engine exposes a DatasetView and training contract; three adapters and three models sit on the consumer side and import downward only, with no arrow ever pointing back into the engine.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-store{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-ext{fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 3;opacity:.7}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-hot{stroke:var(--signal);stroke-width:2;fill:none}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.4;stroke-dasharray:4 3}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+  </style>
+  <rect width="940" height="474" fill="var(--panel)"/>
+        <defs>
+          <marker id="ar8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <rect x="20" y="34" width="356" height="410" rx="6" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-tag" x="40" y="60">DATA ENGINE — knows no model</text>
+
+        <rect class="s-proc" x="42" y="78" width="312" height="66" rx="4"/>
+        <text class="t-lbl" x="198" y="106" text-anchor="middle">get_dataset(id, version)</text>
+        <text class="t-sm" x="198" y="128" text-anchor="middle">resolves a version, never a path</text>
+
+        <rect class="s-proc" x="42" y="164" width="312" height="88" rx="4"/>
+        <text class="t-lbl" x="198" y="192" text-anchor="middle">DatasetView</text>
+        <text class="t-sm" x="198" y="216" text-anchor="middle">iter_samples() · episode_ids(split)</text>
+        <text class="t-sm" x="198" y="236" text-anchor="middle">read_image() · contract</text>
+
+        <rect class="s-hot" x="42" y="272" width="312" height="96" rx="4"/>
+        <text class="t-lbl" x="198" y="300" text-anchor="middle">training contract</text>
+        <text class="t-sm" x="198" y="324" text-anchor="middle">observation{} · action{} · tasks[]</text>
+        <text class="t-sm" x="198" y="344" text-anchor="middle">shapes · normalization · read_transforms</text>
+
+        <rect class="s-box" x="42" y="388" width="312" height="42" rx="4"/>
+        <text class="t-sm" x="198" y="414" text-anchor="middle">Sample — images are references, not pixels</text>
+
+        <line x1="412" y1="28" x2="412" y2="450" stroke="var(--signal)" stroke-width="2" stroke-dasharray="8 5"/>
+        <text class="t-hot" x="412" y="20" text-anchor="middle">boundary</text>
+
+        <rect x="448" y="34" width="472" height="410" rx="6" fill="none" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-tag" x="468" y="60">MODEL LAYER — imports the engine</text>
+
+        <rect class="s-box" x="468" y="78" width="196" height="56" rx="4"/>
+        <text class="t-lbl" x="566" y="102" text-anchor="middle">StateAdapter</text>
+        <text class="t-sm" x="566" y="122" text-anchor="middle">proprioception only</text>
+        <rect class="s-box" x="468" y="148" width="196" height="56" rx="4"/>
+        <text class="t-lbl" x="566" y="172" text-anchor="middle">VisionStateAdapter</text>
+        <text class="t-sm" x="566" y="192" text-anchor="middle">+ cameras, NCHW/NHWC</text>
+        <rect class="s-box" x="468" y="218" width="196" height="56" rx="4"/>
+        <text class="t-lbl" x="566" y="242" text-anchor="middle">VisionLanguageAdapter</text>
+        <text class="t-sm" x="566" y="262" text-anchor="middle">+ task instruction</text>
+
+        <rect class="s-box" x="704" y="78" width="200" height="56" rx="4"/>
+        <text class="t-lbl" x="804" y="102" text-anchor="middle">MeanActionPolicy</text>
+        <text class="t-sm" x="804" y="122" text-anchor="middle">baseline · MSE 0.908</text>
+        <rect class="s-hot" x="704" y="148" width="200" height="56" rx="4"/>
+        <text class="t-lbl" x="804" y="172" text-anchor="middle">NearestNeighborPolicy</text>
+        <text class="t-sm" x="804" y="192" text-anchor="middle">retrieval · MSE 0.024</text>
+        <rect class="s-box" x="704" y="218" width="200" height="56" rx="4" stroke-dasharray="4 3"/>
+        <text class="t-lbl" x="804" y="242" text-anchor="middle">SmolVLAPolicy</text>
+        <text class="t-sm" x="804" y="262" text-anchor="middle">optional extra</text>
+
+        <path class="s-line" d="M668,106 L700,106" marker-end="url(#ar8)"/>
+        <path class="s-line" d="M668,176 L700,176" marker-end="url(#ar8)"/>
+        <path class="s-line" d="M668,246 L700,246" marker-end="url(#ar8)"/>
+
+        <rect class="s-proc" x="468" y="304" width="436" height="72" rx="4"/>
+        <text class="t-lbl" x="686" y="332" text-anchor="middle">Prediction</text>
+        <text class="t-sm" x="686" y="356" text-anchor="middle">actions · <tspan fill="var(--signal)">confidence (mandatory)</tspan> · latency · provenance</text>
+        <path class="s-line" d="M566,278 L566,298" marker-end="url(#ar8)"/>
+        <path class="s-line" d="M804,278 L804,298" marker-end="url(#ar8)"/>
+
+        <rect class="s-box" x="468" y="396" width="436" height="42" rx="4"/>
+        <text class="t-sm" x="686" y="422" text-anchor="middle">integration surface: MODEL_REGISTRY[name] → (Model, Adapter)</text>
+        <path class="s-line" d="M686,380 L686,390" marker-end="url(#ar8)"/>
+
+        <path class="s-line-hot" d="M358,200 L462,160" marker-end="url(#ar8)" stroke="var(--signal)"/>
+        <path class="s-line-hot" d="M358,318 L462,240" marker-end="url(#ar8)" stroke="var(--signal)"/>
+        <text class="t-hot" x="412" y="466" text-anchor="middle">every arrow crosses left → right. None returns.</text>
+      </svg>

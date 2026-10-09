@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="606" viewBox="0 0 960 606" role="img" aria-label="Entity model: DatasetManifest declares ModalitySpecs and Tasks and contains Episodes; each Episode spans a half-open range of Frames; each Frame holds inline numeric observations and BlobRefs pointing into the blob store.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-store{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-ext{fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 3;opacity:.7}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-hot{stroke:var(--signal);stroke-width:2;fill:none}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.4;stroke-dasharray:4 3}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+    text{white-space:pre}
+  </style>
+  <rect width="960" height="606" fill="var(--panel)"/>
+        <defs>
+          <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <rect class="s-proc" x="28" y="52" width="258" height="174" rx="4"/>
+        <rect x="28" y="52" width="258" height="30" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-lbl" x="42" y="73" font-size="14">DatasetManifest</text>
+        <text class="t-sm" x="42" y="104">dataset_id · version</text>
+        <text class="t-sm" x="42" y="126">schema_version · source</text>
+        <text class="t-sm" x="42" y="148">fps · robot_type</text>
+        <text class="t-sm" x="42" y="170">total_episodes / frames</text>
+        <text class="t-sm" x="42" y="192">quality_status</text>
+        <text class="t-sm" x="42" y="214">statistics · attributes</text>
+        <rect class="s-box" x="380" y="52" width="214" height="86" rx="4"/>
+        <rect x="380" y="52" width="214" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="394" y="73" font-size="14">Task</text>
+        <text class="t-sm" x="394" y="104">task_id</text>
+        <text class="t-sm" x="394" y="126">description</text>
+        <rect class="s-proc" x="660" y="52" width="272" height="196" rx="4"/>
+        <rect x="660" y="52" width="272" height="30" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-lbl" x="674" y="73" font-size="14">ModalitySpec</text>
+        <text class="t-sm" x="674" y="104">name    rgb.top · state.joint</text>
+        <text class="t-sm" x="674" y="126">kind    RGB · DEPTH · TACTILE</text>
+        <text class="t-sm" x="674" y="148">        ROBOT_STATE / ACTION</text>
+        <text class="t-sm" x="674" y="170">        FORCE_TORQUE · HAND …</text>
+        <text class="t-sm" x="674" y="192">plane   INLINE | EXTERNAL</text>
+        <text class="t-sm" x="674" y="214">dtype · shape · fps</text>
+        <text class="t-sm" x="674" y="236">source_key  (provenance)</text>
+        <rect class="s-proc" x="28" y="318" width="258" height="196" rx="4"/>
+        <rect x="28" y="318" width="258" height="30" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-lbl" x="42" y="339" font-size="14">Episode</text>
+        <text class="t-sm" x="42" y="370">episode_id · task_id</text>
+        <text class="t-sm" x="42" y="392">frame_start · frame_end</text>
+        <text class="t-sm" x="42" y="414">start / end_timestamp_s</text>
+        <text class="t-sm" x="42" y="436">outcome      demo result</text>
+        <text class="t-sm" x="42" y="458">quality_status   QC result</text>
+        <text class="t-sm" x="42" y="480">blob_ids · modalities</text>
+        <text class="t-sm" x="42" y="502">attributes   video windows</text>
+        <rect class="s-proc" x="380" y="318" width="258" height="196" rx="4"/>
+        <rect x="380" y="318" width="258" height="30" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-lbl" x="394" y="339" font-size="14">Frame</text>
+        <text class="t-sm" x="394" y="370">frame_id · episode_id</text>
+        <text class="t-sm" x="394" y="392">frame_index · timestamp_s</text>
+        <text class="t-sm" x="394" y="414">task_id</text>
+        <text class="t-sm" x="394" y="436">observation{}   inline</text>
+        <text class="t-sm" x="394" y="458">action{}        inline</text>
+        <text class="t-sm" x="394" y="480">modality_refs{}</text>
+        <text class="t-sm" x="394" y="502">   → BlobRef per stream</text>
+        <rect class="s-box" x="676" y="340" width="256" height="152" rx="4"/>
+        <rect x="676" y="340" width="256" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="690" y="361" font-size="14">BlobRef</text>
+        <text class="t-sm" x="690" y="392">modality</text>
+        <text class="t-sm" x="690" y="414">blob_id           sha256</text>
+        <text class="t-sm" x="690" y="436">frame_in_blob     position</text>
+        <text class="t-sm" x="690" y="458">timestamp_in_blob_s</text>
+        <text class="t-sm" x="690" y="480">encoding  video|image|npy</text>
+        
+        <!-- manifest 1..* task -->
+        <path class="s-line" d="M290,94 L376,94" marker-end="url(#ar3)"/>
+        <text class="t-sm" x="333" y="82" text-anchor="middle">1..*</text>
+        <text class="t-sm" x="333" y="116" text-anchor="middle">defines</text>
+
+        <!-- manifest 1..* modality -->
+        <path class="s-line" d="M290,182 L620,182 Q640,182 640,164 L640,150 L656,150" marker-end="url(#ar3)"/>
+        <text class="t-sm" x="452" y="170" text-anchor="middle">1..*  declares — an open registry</text>
+
+        <!-- manifest 1..* episode -->
+        <path class="s-line" d="M157,226 L157,314" marker-end="url(#ar3)"/>
+        <text class="t-sm" x="170" y="266">1..*</text>
+        <text class="t-sm" x="170" y="288">contains</text>
+
+        <!-- episode 1..* frame -->
+        <path class="s-line" d="M290,414 L376,414" marker-end="url(#ar3)"/>
+        <text class="t-sm" x="333" y="402" text-anchor="middle">1..*</text>
+        <text class="t-sm" x="333" y="436" text-anchor="middle">spans</text>
+
+        <!-- frame 0..* blobref -->
+        <path class="s-line" d="M642,414 L672,414" marker-end="url(#ar3)"/>
+        <text class="t-sm" x="657" y="404" text-anchor="middle">0..*</text>
+
+        <!-- modality types blobref -->
+        <path class="s-line-soft" d="M796,252 L796,336"/>
+        <text class="t-sm" x="808" y="298">typed by</text>
+
+        <!-- plane routing -->
+        <rect x="28" y="536" width="904" height="54" rx="5" fill="var(--panel-2)" stroke="var(--rule)" stroke-width="1"/>
+        <text class="t-tag" x="48" y="560">PLANE ROUTING</text>
+        <text class="t-sm" x="48" y="580">INLINE → fixed-size-list column in the frame table   ·   EXTERNAL → blob store, referenced by (blob_id, timestamp)</text>
+      </svg>

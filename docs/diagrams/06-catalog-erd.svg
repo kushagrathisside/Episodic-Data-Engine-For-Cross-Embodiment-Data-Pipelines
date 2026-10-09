@@ -1,0 +1,226 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1016" height="1304" viewBox="0 0 1016 1304" role="img" aria-label="Entity relationship diagram of the twelve catalog tables. Eight describe data: datasets has many versions; versions has many episodes, tasks and modalities and is referenced by qc_records; transform_runs has many episode_lineage rows. Four describe executions and were added by the observability layer: pipeline_runs has many stage_runs and many qc_executions, which qc_records references; qc_cache memoises a validation.">
+  <style>
+    svg{
+      --panel:#FFFFFF; --panel-2:#EEF2F4; --rule:#DCE3E7; --rule-2:#C7D2D8;
+      --ink:#101C24; --accent:#0E6E8B; --accent-soft:#E2EFF4; --accent-line:#8FC2D4;
+      --signal:#B45309; --signal-soft:#FBEEDF;
+      --ok:#17694A; --ok-soft:#E1F0E9; --warn:#8A6100; --warn-soft:#F8EFD9;
+      --err:#A32B23; --err-soft:#F8E6E4;
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--ink);
+    }
+    @media (prefers-color-scheme:dark){
+      svg{
+        --panel:#121C22; --panel-2:#18242B; --rule:#22313A; --rule-2:#2E414C;
+        --ink:#E3EBEF; --accent:#4FBEDC; --accent-soft:#122B34; --accent-line:#2C6D82;
+        --signal:#E0913F; --signal-soft:#2E2213;
+        --ok:#4FB98A; --ok-soft:#10281F; --warn:#D9A93C; --warn-soft:#2A2312;
+        --err:#E5726A; --err-soft:#2E1917;
+      }
+    }
+    .s-box{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-proc{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1.5}
+    .s-store{fill:var(--panel-2);stroke:var(--rule-2);stroke-width:1.5}
+    .s-ext{fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 3;opacity:.7}
+    .s-hot{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.75}
+    .s-line{stroke:currentColor;stroke-width:1.4;fill:none;opacity:.75}
+    .s-line-hot{stroke:var(--signal);stroke-width:2;fill:none}
+    .s-line-soft{stroke:currentColor;stroke-width:1.2;fill:none;opacity:.4;stroke-dasharray:4 3}
+    text{paint-order:stroke fill;stroke:var(--panel);stroke-width:3.5px;
+         stroke-linejoin:round;stroke-linecap:round}
+    .t-lbl{font-family:var(--sans);font-size:13.5px;font-weight:500;fill:currentColor}
+    .t-sm{font-family:var(--mono);font-size:11.5px;fill:currentColor;opacity:.78}
+    .t-tag{font-family:var(--mono);font-size:10.5px;fill:var(--accent);font-weight:600;letter-spacing:.06em}
+    .t-hot{font-family:var(--mono);font-size:11.5px;fill:var(--signal);font-weight:500}
+    .t-note{font-family:var(--mono);font-size:10.5px;fill:currentColor;opacity:.6;font-style:italic}
+    .t-num{font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--accent)}
+  </style>
+  <rect width="1016" height="1304" fill="var(--panel)"/>
+        <defs>
+          <marker id="many" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+            <path d="M1,1 L11,6 L1,11 M11,6 L1,6" stroke="currentColor" fill="none" stroke-width="1.3"/>
+          </marker>
+          <marker id="one" viewBox="0 0 12 12" refX="1" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+            <path d="M4,2 L4,10" stroke="currentColor" stroke-width="1.5"/>
+          </marker>
+        </defs>
+
+        <!-- ── row 1 : y 48–330 ─────────────────────────────────────── -->
+        <rect class="s-box" x="28" y="48" width="232" height="130" rx="4"/>
+        <rect x="28" y="48" width="232" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="42" y="69">datasets</text>
+        <text class="t-sm" x="42" y="100">PK  dataset_id</text>
+        <text class="t-sm" x="42" y="122">    source_format</text>
+        <text class="t-sm" x="42" y="144">    robot_type</text>
+        <text class="t-sm" x="42" y="166">    created_at</text>
+
+        <rect class="s-proc" x="360" y="48" width="268" height="218" rx="4"/>
+        <rect x="360" y="48" width="268" height="30" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-lbl" x="374" y="69">versions</text>
+        <text class="t-sm" x="374" y="100">PK  version_key</text>
+        <text class="t-sm" x="374" y="122">FK  dataset_id → datasets</text>
+        <text class="t-sm" x="374" y="144">    version · stage</text>
+        <text class="t-sm" x="374" y="166">    schema_version</text>
+        <text class="t-sm" x="374" y="188">    total_episodes / frames</text>
+        <text class="t-sm" x="374" y="210">    quality_status</text>
+        <text class="t-sm" x="374" y="232">    manifest_json</text>
+        <text class="t-sm" x="374" y="254">    fps · created_at</text>
+
+        <!-- qc_records: extended to fit the FK-nullability note inside its own border (previously rendered outside the box) -->
+        <rect class="s-box" x="724" y="48" width="264" height="282" rx="4"/>
+        <rect x="724" y="48" width="264" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="738" y="69">qc_records</text>
+        <text class="t-sm" x="738" y="100">PK  id</text>
+        <text class="t-sm" x="738" y="122">    version_key</text>
+        <text class="t-sm" x="738" y="144">    episode_id · frame_id</text>
+        <text class="t-sm" x="738" y="166">    check_name · scope</text>
+        <text class="t-sm" x="738" y="188">    severity · status</text>
+        <text class="t-sm" x="738" y="210">    observed / expected</text>
+        <text class="t-sm" x="738" y="232">    reason · details</text>
+        <text class="t-sm" x="738" y="254">    checked_at</text>
+        <text class="t-hot" x="738" y="276">FK  pipeline_run_id</text>
+        <text class="t-hot" x="738" y="298">FK  qc_execution_id</text>
+        <text class="t-note" x="738" y="320">both nullable — no run = direct call</text>
+
+        <!-- ── row 2 : y 370–588, all three columns share one top edge ─ -->
+        <rect class="s-box" x="28" y="370" width="232" height="86" rx="4"/>
+        <rect x="28" y="370" width="232" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="42" y="391">tasks</text>
+        <text class="t-sm" x="42" y="422">PK  version_key, task_id</text>
+        <text class="t-sm" x="42" y="444">    description</text>
+
+        <rect class="s-proc" x="360" y="370" width="268" height="196" rx="4"/>
+        <rect x="360" y="370" width="268" height="30" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-lbl" x="374" y="391">episodes</text>
+        <text class="t-sm" x="374" y="422">PK  version_key, episode_id</text>
+        <text class="t-sm" x="374" y="444">FK  version_key → versions</text>
+        <text class="t-sm" x="374" y="466">    task_id</text>
+        <text class="t-sm" x="374" y="488">    frame_start · frame_end</text>
+        <text class="t-sm" x="374" y="510">    num_frames · duration_s</text>
+        <text class="t-sm" x="374" y="532">    outcome</text>
+        <text class="t-sm" x="374" y="554">    quality_status</text>
+
+        <rect class="s-proc" x="724" y="370" width="264" height="218" rx="4"/>
+        <rect x="724" y="370" width="264" height="30" rx="4" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.5"/>
+        <text class="t-lbl" x="738" y="391">transform_runs</text>
+        <text class="t-sm" x="738" y="422">PK  run_id</text>
+        <text class="t-sm" x="738" y="444">    dataset_id · operation</text>
+        <text class="t-sm" x="738" y="466">    input_versions[]</text>
+        <text class="t-sm" x="738" y="488">    output_version</text>
+        <text class="t-sm" x="738" y="510">    parameters + fitted stats</text>
+        <text class="t-sm" x="738" y="532">    software_version</text>
+        <text class="t-sm" x="738" y="554">    code_fingerprint</text>
+        <text class="t-sm" x="738" y="576">    input/output/dropped_episodes</text>
+
+        <!-- ── row 3 : y 628–780, both columns share one top edge ────── -->
+        <rect class="s-box" x="28" y="628" width="232" height="152" rx="4"/>
+        <rect x="28" y="628" width="232" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="42" y="649">modalities</text>
+        <text class="t-sm" x="42" y="680">PK  version_key, name</text>
+        <text class="t-sm" x="42" y="702">    kind · plane</text>
+        <text class="t-sm" x="42" y="724">    dtype · shape · fps</text>
+        <text class="t-sm" x="42" y="746">    source_key</text>
+        <text class="t-sm" x="42" y="768">    attributes</text>
+
+        <rect class="s-hot" x="360" y="628" width="268" height="130" rx="4"/>
+        <rect x="360" y="628" width="268" height="30" rx="4" fill="var(--signal-soft)" stroke="var(--signal)" stroke-width="1.75"/>
+        <text class="t-lbl" x="374" y="649">episode_lineage</text>
+        <text class="t-sm" x="374" y="680">PK  run_id, output_version,</text>
+        <text class="t-sm" x="374" y="702">      output_episode_id,</text>
+        <text class="t-sm" x="374" y="724">      input_version, input_episode_id</text>
+        <text class="t-sm" x="374" y="746">FK  run_id → transform_runs</text>
+
+        <!-- ── connectors (grid now aligned, so every elbow is a single clean turn) ── -->
+
+        <!-- datasets 1..N versions -->
+        <path class="s-line" d="M264,113 L356,113" marker-start="url(#one)" marker-end="url(#many)"/>
+        <text class="t-sm" x="310" y="101" text-anchor="middle">has</text>
+
+        <!-- versions 1..N tasks -->
+        <path class="s-line" d="M356,224 L300,224 Q280,224 280,244 L280,413 L264,413" marker-start="url(#one)" marker-end="url(#many)"/>
+        <text class="t-sm" x="272" y="330" text-anchor="end">defines</text>
+
+        <!-- versions 1..N modalities (routed at x=290, clear of the tasks box and of the "defines" lane at x=280) -->
+        <path class="s-line" d="M356,246 L310,246 Q290,246 290,266 L290,704 L264,704" marker-start="url(#one)" marker-end="url(#many)"/>
+        <text class="t-sm" x="282" y="480" text-anchor="end">declares</text>
+
+        <!-- versions 1..N episodes -->
+        <path class="s-line" d="M494,266 L494,366" marker-start="url(#one)" marker-end="url(#many)"/>
+        <text class="t-sm" x="506" y="322">contains</text>
+
+        <!-- versions ..N qc_records (logical, no FK) -->
+        <path class="s-line-soft" d="M632,138 L720,138" marker-end="url(#many)"/>
+        <text class="t-sm" x="676" y="126" text-anchor="middle">version_key</text>
+        <text class="t-sm" x="676" y="166" text-anchor="middle">(no FK)</text>
+
+        <!-- transform_runs 1..N episode_lineage -->
+        <path class="s-line" d="M842,588 L842,660 Q842,693 818,693 L632,693" marker-start="url(#one)" marker-end="url(#many)"/>
+        <text class="t-sm" x="742" y="681" text-anchor="middle">produces</text>
+
+        <!-- episode_lineage maps to episodes (logical) -->
+        <path class="s-line-soft" d="M494,628 L494,562" marker-end="url(#many)"/>
+        <text class="t-sm" x="506" y="600">maps to</text>
+
+        <!-- transform_runs.output_version -> versions (logical) -->
+        <path class="s-line-soft" d="M724,478 L680,478 Q660,478 660,450 L660,280 Q660,262 632,262"/>
+        <text class="t-sm" x="672" y="370" text-anchor="middle" transform="rotate(-90 672 370)">output_version</text>
+
+        <!-- cascade legend — sits below the grid, clear of every connector -->
+        <rect x="28" y="820" width="460" height="130" rx="5" fill="var(--panel-2)" stroke="var(--rule)" stroke-width="1"/>
+        <text class="t-tag" x="46" y="846">CASCADE ON DELETE</text>
+        <text class="t-sm" x="46" y="872">datasets → versions</text>
+        <text class="t-sm" x="46" y="894">versions → episodes, tasks, modalities</text>
+        <text class="t-sm" x="46" y="916">transform_runs → episode_lineage</text>
+        <text class="t-sm" x="46" y="938" opacity=".62">dashed = logical reference, no constraint</text>
+
+        <!-- ── observability: the time dimension ───────────────────── -->
+        <rect x="28" y="990" width="960" height="286" rx="5" fill="none"
+              stroke="var(--signal)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text class="t-tag" x="48" y="1016" style="fill:var(--signal)">OBSERVABILITY — the time dimension · small and bounded by construction</text>
+
+        <rect class="s-hot" x="48" y="1030" width="212" height="152" rx="4"/>
+        <rect x="48" y="1030" width="212" height="30" rx="4" fill="var(--signal-soft)" stroke="var(--signal)" stroke-width="1.5"/>
+        <text class="t-lbl" x="62" y="1051">pipeline_runs</text>
+        <text class="t-sm" x="62" y="1082">PK  run_id</text>
+        <text class="t-sm" x="62" y="1104">    trace_id</text>
+        <text class="t-sm" x="62" y="1126">    dataset_id · status</text>
+        <text class="t-sm" x="62" y="1148">    started / finished</text>
+        <text class="t-sm" x="62" y="1170">    config_hash · host</text>
+
+        <rect class="s-box" x="316" y="1030" width="222" height="196" rx="4"/>
+        <rect x="316" y="1030" width="222" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="330" y="1051">stage_runs</text>
+        <text class="t-sm" x="330" y="1082">PK  run_id, seq</text>
+        <text class="t-sm" x="330" y="1104">FK  run_id → runs</text>
+        <text class="t-sm" x="330" y="1126">    stage · status</text>
+        <text class="t-sm" x="330" y="1148">    duration_s</text>
+        <text class="t-sm" x="330" y="1170">    records in / out</text>
+        <text class="t-sm" x="330" y="1192">    episodes · bytes</text>
+        <text class="t-sm" x="330" y="1214">    peak_rss · span_id</text>
+
+        <rect class="s-box" x="594" y="1030" width="212" height="196" rx="4"/>
+        <rect x="594" y="1030" width="212" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="608" y="1051">qc_executions</text>
+        <text class="t-sm" x="608" y="1082">PK  qc_execution_id</text>
+        <text class="t-sm" x="608" y="1104">    run_id</text>
+        <text class="t-sm" x="608" y="1126">    version · started</text>
+        <text class="t-sm" x="608" y="1148">    checks_run</text>
+        <text class="t-sm" x="608" y="1170">    findings</text>
+        <text class="t-sm" x="608" y="1192">    episodes by status</text>
+        <text class="t-sm" x="608" y="1214">    dataset_status</text>
+
+        <rect class="s-box" x="836" y="1030" width="140" height="152" rx="4"/>
+        <rect x="836" y="1030" width="140" height="30" rx="4" fill="var(--panel-2)" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <text class="t-lbl" x="850" y="1051">qc_cache</text>
+        <text class="t-sm" x="850" y="1082">PK  cache_key</text>
+        <text class="t-sm" x="850" y="1104">    suite_hash</text>
+        <text class="t-sm" x="850" y="1126">    table_hash</text>
+        <text class="t-sm" x="850" y="1148">    records_json</text>
+        <text class="t-sm" x="850" y="1170">    hits</text>
+
+        <path class="s-line" d="M260,1106 L316,1106" marker-start="url(#one)" marker-end="url(#many)"/>
+        <path class="s-line" d="M154,1182 L154,1242 L700,1242 L700,1226" marker-start="url(#one)" marker-end="url(#many)"/>
+        <text class="t-sm" x="430" y="1262" text-anchor="middle" style="opacity:.66">one run · many stages, many validations</text>
+
+</svg>
