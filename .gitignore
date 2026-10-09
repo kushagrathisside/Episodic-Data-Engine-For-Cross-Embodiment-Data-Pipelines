@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Data never belongs in the source tree -- see rde/config.py.
+# The engine writes everything under $RDE_DATA_ROOT (default ~/VLAExperiments/rde_data).
+rde_data/
+*.parquet
+*.mp4
+*.db
+
+# Scratch renders
+*.png
+
+# Internal code-review audit -- kept locally as a private record, not published.
+docs/18-code-review.md
+docs/code-review/

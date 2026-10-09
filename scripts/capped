@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Run a command under a hard memory ceiling.
+#
+# The engine is designed to stream and stay bounded, but "designed to" is not
+# "guaranteed to" -- a bug in a new adapter, or a dataset with an unexpected
+# shape, can still balloon. On WSL an OOM does not just kill the process: it can
+# take the whole VM down with it. This wraps a command in a cgroup v2 scope with
+# MemoryMax set, so a runaway stage dies alone (SIGKILL, exit 137) and the box
+# survives.
+#
+#   scripts/capped .venv/bin/rde run --config configs/x.json
+#   RDE_MEM_MAX=3G scripts/capped python examples/03_resource_report.py
+#
+# Defaults leave >2 GB of headroom on an 8 GB box.
+set -euo pipefail
+
+MEM="${RDE_MEM_MAX:-6G}"
+SWAP="${RDE_SWAP_MAX:-1G}"
+
+if ! command -v systemd-run >/dev/null 2>&1; then
+    echo "capped: systemd-run unavailable; running uncapped" >&2
+    exec "$@"
+fi
+
+exec systemd-run --user --scope -q \
+    -p MemoryMax="$MEM" \
+    -p MemorySwapMax="$SWAP" \
+    -- "$@"
