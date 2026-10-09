@@ -281,7 +281,7 @@ These examples are also reachable through `make`: `make pipeline`, `make faults`
 ## 9. Tests
 
 ```bash
-pytest tests -q      # 186 tests, 80% coverage
+pytest tests -q      # 188 tests, 79% line coverage
 ```
 
 Tests run against a synthetic dataset generated in the real LeRobot v3.0 layout (`rde/testing/`), using no network access and no mocks of the source format, since format-handling defects are where the most interesting bugs in an ingestion layer tend to live.

@@ -23,7 +23,7 @@ Table 1 summarizes the scale of the implementation at the time of writing.
 | Quantity | Value |
 |---|---|
 | Components | 15 |
-| Python files | 63 (15,324 lines, including package `__init__` files) |
+| Python files | 63 (15,354 lines, including package `__init__` files) |
 | QC checks | 24 |
 | Metric instruments | 37 |
 | Catalog entities | 12 |

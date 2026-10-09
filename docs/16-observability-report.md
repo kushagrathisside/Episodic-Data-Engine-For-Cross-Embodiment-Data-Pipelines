@@ -46,7 +46,7 @@ The package `rde/observability/` comprises 3,243 lines across ten modules, liste
 
 Beyond this package, the project also added `rde/qc/cache.py` for incremental validation, three new catalog tables (`pipeline_runs`, `stage_runs`, `qc_executions`) plus two Parquet-only event tables (`episode_health`, `drift_reports`) that have no catalog counterpart, the `rde obs` command group with eight subcommands, two demonstration scripts, and 52 tests.
 
-Across the whole repository, the system now comprises 14,949 lines of engine code, 185 passing tests with 1 skipped, 18 architecture documents, and 9 runnable examples.
+Across the whole repository, the system now comprises 14,979 lines of engine code, 187 passing tests with 1 skipped, 18 architecture documents, and 9 runnable examples.
 
 ## 4. What Was Measured
 

@@ -6,7 +6,7 @@ The other documents in this set explain why the system is shaped as it is. This 
 
 This document is a reference rather than a chapter. It is numbered 11 because it closes the sequence of engine documents, but its coverage extends to every module, including the observability layer introduced in [12-observability-recon.md](12-observability-recon.md) through [16-observability-report.md](16-observability-report.md). It is intended to be read beside the source, by lookup, rather than read in sequence, and every claim it makes points at a specific file.
 
-The codebase comprises 47 modules and 14,949 lines, excluding package `__init__` files that only re-export names, and 186 tests (185 passing, 1 skipped).
+The codebase comprises 47 modules and 14,979 lines, excluding package `__init__` files that only re-export names, and 188 tests (187 passing, 1 skipped).
 
 ## 1. How the Layers Stack
 
@@ -386,11 +386,11 @@ Table 17 summarizes the three model implementations in this module.
 | `NearestNeighborPolicy` | Retrieval. | `_squared_distances` uses the Gram-matrix identity `‖a−b‖² = ‖a‖² + ‖b‖² − 2a·b`, because the naive broadcast difference array peaked at 1.58 GB. |
 | `SmolVLAPolicy` | A real vision-language-action model. | Three impedance mismatches are absorbed entirely within the adapter and none within the engine: camera slot naming (`observation.images.*` versus this engine's `image.rgb.*`), the LeRobot 0.4 processor pipeline (`make_pre_post_processors`), and a device pin. |
 
-## 14. `evaluation/evaluator.py` (290 lines)
+## 14. `evaluation/evaluator.py` (311 lines)
 
 This module scores a model against held-out frames and produces `FrameOutcome` rows. The internal function `_safe_corr` applies a relative, rather than absolute, tolerance to its denominator. An earlier version used an absolute guard of `1e-9`, which allowed a float32 constant vector through undetected — `np.full(n, 0.1, dtype=float32).std()` evaluates to 7.45e-09 — after which `corrcoef` emitted `NaN` directly into the feedback loop's inputs. The same class of bug is avoided the same way in `drift.mean_shift`.
 
-## 15. `feedback/flywheel.py` (330 lines)
+## 15. `feedback/flywheel.py` (339 lines)
 
 This module is where evaluation output becomes data-selection decisions. `FailureMode` classifies each failure, and `FeedbackLoop` nominates episodes for retraining and marks them for human review within the catalog. The industry term for this practice is directed triage, and it constitutes the autonomous-vehicle sector's core data-selection discipline; this system implemented the mechanism before the term for it was known.
 
